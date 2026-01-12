@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SkSidebar } from '../../../shared/components/sk-sidebar/sk-sidebar';
 import { EventService } from '../../../services/event.service';
+import { Event } from '../../../models/event.model';
 
 @Component({
   selector: 'app-create-event',
@@ -11,15 +12,24 @@ import { EventService } from '../../../services/event.service';
   templateUrl: './create-event.html',
   styleUrl: './create-event.scss',
 })
-export class CreateEvent {
+export class CreateEvent implements OnInit {
   eventForm: FormGroup;
   submitted = false;
   loading = false;
   successMessage = '';
   errorMessage = '';
   currentAdminId: number | null = null;
+  events: Event[] = [];
+  filteredEvents: Event[] = [];
+  showForm = false;
+  eventsLoading = false;
 
-  constructor(private formBuilder: FormBuilder, private eventService: EventService) {
+  // Search and sort state
+  searchTerm = '';
+  sortColumn: keyof Event | null = null;
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  constructor(private formBuilder: FormBuilder, private eventService: EventService, private cdr: ChangeDetectorRef) {
     this.eventForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required],
@@ -42,6 +52,81 @@ export class CreateEvent {
       }
     } else {
       console.warn('No admin data found in localStorage');
+    }
+  }
+
+  ngOnInit() {
+    this.loadEvents();
+  }
+
+  loadEvents() {
+    this.eventsLoading = true;
+    this.eventService.getAllEvents().subscribe(
+      (response) => {
+        console.log('Events loaded:', response);
+        this.events = response;
+        this.applyFiltersAndSort();
+        this.eventsLoading = false;
+        this.cdr.markForCheck();
+      },
+      (error) => {
+        console.error('Error loading events:', error);
+        this.eventsLoading = false;
+        this.cdr.markForCheck();
+      }
+    );
+  }
+
+  onSearchChange() {
+    this.applyFiltersAndSort();
+    this.cdr.markForCheck();
+  }
+
+  onSort(column: keyof Event) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.applyFiltersAndSort();
+    this.cdr.markForCheck();
+  }
+
+  applyFiltersAndSort() {
+    let filtered = [...this.events];
+    
+    // Search
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.trim().toLowerCase();
+      filtered = filtered.filter(e =>
+        (e.title && e.title.toLowerCase().includes(term)) ||
+        (e.description && e.description.toLowerCase().includes(term)) ||
+        (e.location && e.location.toLowerCase().includes(term))
+      );
+    }
+    
+    // Sort
+    if (this.sortColumn) {
+      const col = this.sortColumn;
+      filtered = filtered.sort((a, b) => {
+        const aVal = a[col];
+        const bVal = b[col];
+        if (aVal == null) return 1;
+        if (bVal == null) return -1;
+        if (aVal < bVal) return this.sortDirection === 'asc' ? -1 : 1;
+        if (aVal > bVal) return this.sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    
+    this.filteredEvents = filtered;
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+    if (!this.showForm) {
+      this.resetForm();
     }
   }
 
@@ -80,6 +165,9 @@ export class CreateEvent {
         this.successMessage = 'Event created successfully!';
         this.eventForm.reset();
         this.submitted = false;
+        this.showForm = false;
+        this.loadEvents();
+        this.cdr.markForCheck();
         
         // Clear success message after 5 seconds
         setTimeout(() => {
@@ -102,6 +190,7 @@ export class CreateEvent {
   resetForm() {
     this.eventForm.reset();
     this.submitted = false;
+    this.cdr.markForCheck();
   }
 
   get title() {

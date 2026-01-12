@@ -1,81 +1,150 @@
-<div style="display: flex;">
+<div class="events-container">
     <app-sk-sidebar></app-sk-sidebar>
-    <div style="flex: 1; padding: 20px;">
-        <h1>Create Event</h1>
-
-        <!-- Success Message -->
-        <div *ngIf="successMessage" style="padding: 12px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 20px;">
-            {{ successMessage }}
+    <div class="events-content">
+        <div class="page-header">
+            <div>
+                <h1>Events</h1>
+                <p class="page-subtitle">Create and manage all upcoming events</p>
+            </div>
+            <button 
+                (click)="toggleForm()"
+                class="add-button"
+            >
+                {{ showForm ? '✕ Cancel' : '+ Add Event' }}
+            </button>
         </div>
 
-        <!-- Error Message -->
-        <div *ngIf="errorMessage" style="padding: 12px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 20px;">
-            {{ errorMessage }}
+        <!-- Events List -->
+        <div *ngIf="!showForm">
+            <!-- Loading State -->
+            <div *ngIf="eventsLoading" class="loading-state">Loading events...</div>
+
+            <!-- Empty State -->
+            <div *ngIf="!eventsLoading && events.length === 0" class="empty-state">
+                No events found. Click "Add Event" to create one.
+            </div>
+
+            <!-- Search Toolbar -->
+            <div *ngIf="!eventsLoading && events.length > 0" class="toolbar">
+                <div class="search-input">
+                    <input 
+                        type="text" 
+                        [(ngModel)]="searchTerm" 
+                        (input)="onSearchChange()" 
+                        placeholder="Search events by title, description, or location..."
+                    />
+                </div>
+            </div>
+
+            <!-- Events Table -->
+            <div *ngIf="!eventsLoading && filteredEvents.length > 0" class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th (click)="onSort('title')" title="Click to sort">
+                                Title <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                            <th (click)="onSort('description')" title="Click to sort">
+                                Description <span *ngIf="sortColumn === 'description'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                            <th (click)="onSort('eventDate')" title="Click to sort">
+                                Date & Time <span *ngIf="sortColumn === 'eventDate'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                            <th (click)="onSort('location')" title="Click to sort">
+                                Location <span *ngIf="sortColumn === 'location'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let event of filteredEvents">
+                            <td title="{{ event.title }}">{{ event.title }}</td>
+                            <td title="{{ event.description }}">{{ event.description }}</td>
+                            <td>{{ event.eventDate | date: 'short' }}</td>
+                            <td>{{ event.location }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- No Search Results -->
+            <div *ngIf="!eventsLoading && events.length > 0 && filteredEvents.length === 0" class="empty-state">
+                No events match your search. Try adjusting your search criteria.
+            </div>
         </div>
 
-        <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
-            <div style="margin-bottom: 20px;">
-                <label for="title" style="display: block; margin-bottom: 5px; font-weight: bold;">Event Title</label>
+        <!-- Create Event Form -->
+        <div *ngIf="showForm" class="form-section">
+            <h2>Create New Event</h2>
+            
+            <!-- Success Message -->
+            <div *ngIf="successMessage" class="success-state">
+                {{ successMessage }}
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="error-state">
+                {{ errorMessage }}
+            </div>
+
+            <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+                <label for="title">Event Title</label>
                 <input 
                     type="text" 
                     id="title" 
                     formControlName="title"
                     placeholder="Enter event title"
-                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
                 />
-                <div *ngIf="submitted && title?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                <div *ngIf="submitted && title?.invalid" class="error-text">
                     <span *ngIf="title?.errors?.['required']">Title is required</span>
                     <span *ngIf="title?.errors?.['minlength']">Title must be at least 3 characters</span>
                 </div>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <label for="description" style="display: block; margin-bottom: 5px; font-weight: bold;">Description</label>
+            <div class="form-group">
+                <label for="description">Description</label>
                 <textarea 
                     id="description" 
                     formControlName="description"
                     placeholder="Enter event description"
                     rows="5"
-                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: Arial, sans-serif;"
                 ></textarea>
-                <div *ngIf="submitted && description?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                <div *ngIf="submitted && description?.invalid" class="error-text">
                     <span *ngIf="description?.errors?.['required']">Description is required</span>
                 </div>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <label for="event_date" style="display: block; margin-bottom: 5px; font-weight: bold;">Event Date & Time</label>
+            <div class="form-group">
+                <label for="event_date">Event Date & Time</label>
                 <input 
                     type="datetime-local" 
                     id="event_date" 
                     formControlName="event_date"
-                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
                 />
-                <div *ngIf="submitted && event_date?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                <div *ngIf="submitted && event_date?.invalid" class="error-text">
                     <span *ngIf="event_date?.errors?.['required']">Event date is required</span>
                 </div>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <label for="location" style="display: block; margin-bottom: 5px; font-weight: bold;">Location</label>
+            <div class="form-group">
+                <label for="location">Location</label>
                 <input 
                     type="text" 
                     id="location" 
                     formControlName="location"
                     placeholder="Enter event location"
-                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
                 />
-                <div *ngIf="submitted && location?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                <div *ngIf="submitted && location?.invalid" class="error-text">
                     <span *ngIf="location?.errors?.['required']">Location is required</span>
                     <span *ngIf="location?.errors?.['minlength']">Location must be at least 3 characters</span>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 10px;">
+            <div class="form-buttons">
                 <button 
                     type="submit" 
                     [disabled]="loading"
-                    style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;"
+                    class="btn-primary"
                 >
                     {{ loading ? 'Creating...' : 'Create Event' }}
                 </button>
@@ -83,11 +152,12 @@
                     type="button" 
                     (click)="resetForm()"
                     [disabled]="loading"
-                    style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;"
+                    class="btn-secondary"
                 >
                     Reset
                 </button>
             </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
