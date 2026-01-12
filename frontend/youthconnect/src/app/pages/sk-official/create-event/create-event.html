@@ -2,6 +2,92 @@
     <app-sk-sidebar></app-sk-sidebar>
     <div style="flex: 1; padding: 20px;">
         <h1>Create Event</h1>
-        <p>create-event works!</p>
+
+        <!-- Success Message -->
+        <div *ngIf="successMessage" style="padding: 12px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 20px;">
+            {{ successMessage }}
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" style="padding: 12px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 20px;">
+            {{ errorMessage }}
+        </div>
+
+        <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+            <div style="margin-bottom: 20px;">
+                <label for="title" style="display: block; margin-bottom: 5px; font-weight: bold;">Event Title</label>
+                <input 
+                    type="text" 
+                    id="title" 
+                    formControlName="title"
+                    placeholder="Enter event title"
+                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+                />
+                <div *ngIf="submitted && title?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                    <span *ngIf="title?.errors?.['required']">Title is required</span>
+                    <span *ngIf="title?.errors?.['minlength']">Title must be at least 3 characters</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="description" style="display: block; margin-bottom: 5px; font-weight: bold;">Description</label>
+                <textarea 
+                    id="description" 
+                    formControlName="description"
+                    placeholder="Enter event description"
+                    rows="5"
+                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: Arial, sans-serif;"
+                ></textarea>
+                <div *ngIf="submitted && description?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                    <span *ngIf="description?.errors?.['required']">Description is required</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="event_date" style="display: block; margin-bottom: 5px; font-weight: bold;">Event Date & Time</label>
+                <input 
+                    type="datetime-local" 
+                    id="event_date" 
+                    formControlName="event_date"
+                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+                />
+                <div *ngIf="submitted && event_date?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                    <span *ngIf="event_date?.errors?.['required']">Event date is required</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="location" style="display: block; margin-bottom: 5px; font-weight: bold;">Location</label>
+                <input 
+                    type="text" 
+                    id="location" 
+                    formControlName="location"
+                    placeholder="Enter event location"
+                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+                />
+                <div *ngIf="submitted && location?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                    <span *ngIf="location?.errors?.['required']">Location is required</span>
+                    <span *ngIf="location?.errors?.['minlength']">Location must be at least 3 characters</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button 
+                    type="submit" 
+                    [disabled]="loading"
+                    style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;"
+                >
+                    {{ loading ? 'Creating...' : 'Create Event' }}
+                </button>
+                <button 
+                    type="button" 
+                    (click)="resetForm()"
+                    [disabled]="loading"
+                    style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;"
+                >
+                    Reset
+                </button>
+            </div>
+        </form>
     </div>
 </div>
