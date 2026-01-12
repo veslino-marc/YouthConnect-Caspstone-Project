@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SkSidebar } from '../../../shared/components/sk-sidebar/sk-sidebar';
@@ -21,7 +21,10 @@ export class ManageProfiling implements OnInit {
   isLoading: boolean = false;
   errorMessage: string = '';
   
-  constructor(private youthProfileService: YouthProfileService) {
+  constructor(
+    private youthProfileService: YouthProfileService,
+    private cdr: ChangeDetectorRef
+  ) {
     console.log('ManageProfiling component constructed');
   }
   
@@ -64,8 +67,14 @@ export class ManageProfiling implements OnInit {
         console.log('Youth profiles loaded successfully:', data);
         this.youthProfiles = data || [];
         this.isLoading = false;
+        
+        // Manually trigger change detection
+        this.cdr.detectChanges();
+        
         if (this.youthProfiles.length === 0) {
           console.warn('No youth profiles found in database');
+        } else {
+          console.log(`Loaded ${this.youthProfiles.length} youth profiles`);
         }
       },
       error: (error) => {
@@ -73,6 +82,9 @@ export class ManageProfiling implements OnInit {
         this.errorMessage = 'Failed to load youth profiles. Please check if the backend server is running.';
         this.isLoading = false;
         this.youthProfiles = [];
+        
+        // Manually trigger change detection
+        this.cdr.detectChanges();
         
         // Show detailed error in console
         if (error.status === 0) {
