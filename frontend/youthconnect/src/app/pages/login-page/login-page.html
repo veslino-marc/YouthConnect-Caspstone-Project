@@ -1,21 +1,41 @@
 <div class="page-wrapper">
-  <div class="card">
-    <button class="back">←</button>
+    <div class="card">
+        <button class="back">←</button>
 
-    <h1 class="title">Welcome Back</h1>
+        <h1 class="title">Welcome Back</h1>
 
-    <div class="tabs">
-      <button class="tab" [class.active]="activeTab === 'youth'" (click)="setTab('youth')">YOUTH MEMBER</button>
-      <button class="tab" [class.active]="activeTab === 'sk'" (click)="setTab('sk')">SK OFFICIAL</button>
+        <div class="tabs">
+            <button 
+                class="tab" 
+                [class.active]="activeTab === 'youth'" 
+                (click)="setTab('youth')">
+                YOUTH MEMBER
+            </button>
+            <button 
+                class="tab" 
+                [class.active]="activeTab === 'sk'" 
+                (click)="setTab('sk')">
+                SK OFFICIAL
+            </button>
+        </div>
+
+        <form class="login-form" (submit)="onSubmit($event)">
+            <input 
+                class="input" 
+                name="email" 
+                type="email" 
+                placeholder="Email" 
+                required />
+            <input 
+                class="input" 
+                name="password" 
+                type="password" 
+                placeholder="Password" 
+                required />
+
+            <button class="btn-login" type="submit">Login</button>
+        </form>
+
+        <p class="signup">Don't have an account? <a href="#">Sign up</a></p>
     </div>
-
-    <form class="login-form" (submit)="onSubmit($event)">
-      <input class="input" name="email" type="email" placeholder="Email" required />
-      <input class="input" name="password" type="password" placeholder="Password" required />
-
-      <button class="btn-login" type="submit">Login</button>
-    </form>
-
-    <p class="signup">Don't have an account? <a href="#">Sign up</a></p>
-  </div>
 </div>
