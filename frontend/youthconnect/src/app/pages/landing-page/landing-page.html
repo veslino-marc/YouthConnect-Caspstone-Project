@@ -7,7 +7,7 @@
       <a href="#" class="nav-link">Vision</a>
       <a href="#" class="nav-link">About us</a>
       <a href="#" class="nav-link">Contact</a>
-      <a href="#" class="nav-link login">Login</a>
+      <a routerLink="/login" class="nav-link login">Login</a>
     </nav>
   </header>
   <main class="landing-main">
@@ -28,7 +28,7 @@
         <button class="btn btn-learn">Learn More</button>
         <button 
             class="btn btn-join" 
-            (click)="goToLogin()">
+            routerLink="/login">
             Join Us!
         </button>
       </div>
