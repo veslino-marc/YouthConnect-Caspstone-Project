@@ -1,7 +1,216 @@
 <div style="display: flex;">
     <app-sk-sidebar></app-sk-sidebar>
-    <div style="flex: 1; padding: 20px;">
-        <h1>Manage Profiling</h1>
-        <p>manage-profiling works!</p>
+    <div class="manage-profiling-container">
+        <div class="header">
+            <h1>Manage Youth Profiling</h1>
+            <button class="btn-add" (click)="openAddModal()">
+                + Add New Youth
+            </button>
+        </div>
+        
+        <div class="table-container">
+            <table class="youth-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Gender</th>
+                        <th>Birthday</th>
+                        <th>Contact</th>
+                        <th>Address</th>
+                        <th>Civil Status</th>
+                        <th>Classification</th>
+                        <th>Education</th>
+                        <th>Work Status</th>
+                        <th>SK Voter</th>
+                        <th>National Voter</th>
+                        <th>Assemblies</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let profile of youthProfiles">
+                        <td>{{ profile.youthId }}</td>
+                        <td>{{ getFullName(profile) }}</td>
+                        <td>{{ profile.gender }}</td>
+                        <td>{{ profile.birthday }}</td>
+                        <td>{{ profile.contactNumber }}</td>
+                        <td>{{ profile.completeAddress }}</td>
+                        <td>{{ profile.civilStatus }}</td>
+                        <td>{{ profile.youthClassification || 'N/A' }}</td>
+                        <td>{{ profile.educationBackground || 'N/A' }}</td>
+                        <td>{{ profile.workStatus || 'N/A' }}</td>
+                        <td>{{ profile.skVoter ? 'Yes' : 'No' }}</td>
+                        <td>{{ profile.nationalVoter ? 'Yes' : 'No' }}</td>
+                        <td>{{ profile.numAttendedAssemblies || 0 }}</td>
+                        <td class="actions">
+                            <button class="btn-edit" 
+                                    (click)="openEditModal(profile)">
+                                Edit
+                            </button>
+                            <button class="btn-delete" 
+                                    (click)="deleteProfile(profile.youthId)">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="youthProfiles.length === 0">
+                        <td colspan="14" style="text-align: center; padding: 20px;">
+                            No youth profiles found
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>{{ isEditMode ? 'Edit Youth Profile' : 'Add New Youth Profile' }}</h2>
+            <button class="close-btn" (click)="closeModal()">&times;</button>
+        </div>
+        
+        <form class="modal-form" (ngSubmit)="saveProfile()">
+            <div class="form-section">
+                <h3>Personal Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name <span class="required">*</span></label>
+                        <input type="text" [(ngModel)]="currentProfile.firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name</label>
+                        <input type="text" [(ngModel)]="currentProfile.middleName" name="middleName">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Last Name <span class="required">*</span></label>
+                        <input type="text" [(ngModel)]="currentProfile.lastName" name="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Suffix</label>
+                        <input type="text" [(ngModel)]="currentProfile.suffix" name="suffix" placeholder="Jr., Sr., III">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Gender <span class="required">*</span></label>
+                        <select [(ngModel)]="currentProfile.gender" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Birthday <span class="required">*</span></label>
+                        <input type="date" [(ngModel)]="currentProfile.birthday" name="birthday" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contact Number <span class="required">*</span></label>
+                        <input type="tel" [(ngModel)]="currentProfile.contactNumber" name="contactNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Civil Status <span class="required">*</span></label>
+                        <select [(ngModel)]="currentProfile.civilStatus" name="civilStatus" required>
+                            <option value="">Select Civil Status</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Widowed">Widowed</option>
+                            <option value="Separated">Separated</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Complete Address <span class="required">*</span></label>
+                    <textarea [(ngModel)]="currentProfile.completeAddress" name="completeAddress" rows="2" required></textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Youth Classification</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Youth Classification <span class="required">*</span></label>
+                        <select [(ngModel)]="currentProfile.classification!.youthClassification" name="youthClassification" required>
+                            <option value="">Select Classification</option>
+                            <option value="In-School Youth">In-School Youth</option>
+                            <option value="Out-of-School Youth">Out-of-School Youth</option>
+                            <option value="Working Youth">Working Youth</option>
+                            <option value="Youth with Disability">Youth with Disability</option>
+                            <option value="Indigenous Youth">Indigenous Youth</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Education Background <span class="required">*</span></label>
+                        <select [(ngModel)]="currentProfile.classification!.educationBackground" name="educationBackground" required>
+                            <option value="">Select Education</option>
+                            <option value="Elementary">Elementary</option>
+                            <option value="High School">High School</option>
+                            <option value="Senior High School">Senior High School</option>
+                            <option value="College">College</option>
+                            <option value="Vocational">Vocational</option>
+                            <option value="Graduate">Graduate</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Work Status <span class="required">*</span></label>
+                        <select [(ngModel)]="currentProfile.classification!.workStatus" name="workStatus" required>
+                            <option value="">Select Work Status</option>
+                            <option value="Employed">Employed</option>
+                            <option value="Unemployed">Unemployed</option>
+                            <option value="Self-Employed">Self-Employed</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Assemblies Attended</label>
+                        <input type="number" [(ngModel)]="currentProfile.classification!.numAttendedAssemblies" name="numAttendedAssemblies" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" [(ngModel)]="currentProfile.classification!.skVoter" name="skVoter">
+                            SK Voter
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" [(ngModel)]="currentProfile.classification!.nationalVoter" name="nationalVoter">
+                            National Voter
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" [(ngModel)]="currentProfile.classification!.pastVoter" name="pastVoter">
+                            Past Voter
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Non-Attendance Reason</label>
+                    <textarea [(ngModel)]="currentProfile.classification!.nonAttendanceReason" name="nonAttendanceReason" rows="2" placeholder="Reason for not attending assemblies"></textarea>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+                <button type="submit" class="btn-save">{{ isEditMode ? 'Update' : 'Save' }}</button>
+            </div>
+        </form>
     </div>
 </div>

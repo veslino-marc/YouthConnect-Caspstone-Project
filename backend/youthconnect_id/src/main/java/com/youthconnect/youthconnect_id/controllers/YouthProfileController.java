@@ -2,6 +2,7 @@ package com.youthconnect.youthconnect_id.controllers;
 
 import com.youthconnect.youthconnect_id.models.YouthProfile;
 import com.youthconnect.youthconnect_id.models.dto.YouthProfileDTO;
+import com.youthconnect.youthconnect_id.models.dto.YouthProfileWithClassificationDTO;
 import com.youthconnect.youthconnect_id.services.YouthProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,9 +42,22 @@ public class YouthProfileController {
         return new ResponseEntity<>(profiles, HttpStatus.OK);
     }
     
+    @GetMapping("/with-classification")
+    public ResponseEntity<List<YouthProfileWithClassificationDTO>> getAllYouthProfilesWithClassification() {
+        List<YouthProfileWithClassificationDTO> profiles = youthProfileService.getAllYouthProfilesWithClassification();
+        return new ResponseEntity<>(profiles, HttpStatus.OK);
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<YouthProfile> getYouthProfileById(@PathVariable Integer id) {
         Optional<YouthProfile> profile = youthProfileService.getYouthProfileById(id);
+        return profile.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
+    @GetMapping("/{id}/with-classification")
+    public ResponseEntity<YouthProfileWithClassificationDTO> getYouthProfileWithClassificationById(@PathVariable Integer id) {
+        Optional<YouthProfileWithClassificationDTO> profile = youthProfileService.getYouthProfileWithClassificationById(id);
         return profile.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -53,6 +67,17 @@ public class YouthProfileController {
                                                            @RequestBody YouthProfileDTO youthProfileDTO) {
         try {
             YouthProfile updatedProfile = youthProfileService.updateYouthProfile(id, youthProfileDTO);
+            return new ResponseEntity<>(updatedProfile, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    
+    @PutMapping("/{id}/with-classification")
+    public ResponseEntity<YouthProfile> updateYouthProfileWithClassification(@PathVariable Integer id, 
+                                                           @RequestBody YouthProfileDTO youthProfileDTO) {
+        try {
+            YouthProfile updatedProfile = youthProfileService.updateYouthProfileWithClassification(id, youthProfileDTO);
             return new ResponseEntity<>(updatedProfile, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
