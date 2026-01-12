@@ -23,6 +23,7 @@ export class CreateEvent implements OnInit {
   filteredEvents: Event[] = [];
   showForm = false;
   eventsLoading = false;
+  editingEventId: number | null = null;
 
   // Search and sort state
   searchTerm = '';
@@ -172,6 +173,48 @@ export class CreateEvent implements OnInit {
     doc.save('events.pdf');
   }
 
+  onEdit(event: Event) {
+    console.log('Edit event:', event);
+    this.editingEventId = event.eventId || null;
+    this.eventForm.patchValue({
+      title: event.title,
+      description: event.description,
+      event_date: event.eventDate,
+      location: event.location
+    });
+    this.showForm = true;
+    this.submitted = false;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.cdr.markForCheck();
+    
+    // Scroll to the form
+    setTimeout(() => {
+      const formSection = document.querySelector('.form-section');
+      if (formSection) {
+        formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
+  onDelete(event: Event) {
+    if (!confirm(`Are you sure you want to delete "${event.title}"?`)) return;
+    
+    this.eventService.deleteEvent(event.eventId!).subscribe(
+      (response) => {
+        console.log('Event deleted successfully:', response);
+        this.events = this.events.filter(e => e.eventId !== event.eventId);
+        this.applyFiltersAndSort();
+        this.cdr.markForCheck();
+      },
+      (error) => {
+        console.error('Error deleting event:', error);
+        alert('Failed to delete event. Please try again.');
+        this.cdr.markForCheck();
+      }
+    );
+  }
+
   toggleForm() {
     this.showForm = !this.showForm;
     if (!this.showForm) {
@@ -207,38 +250,74 @@ export class CreateEvent implements OnInit {
       createdByAdminId: this.currentAdminId
     };
 
-    this.eventService.createEvent(eventData).subscribe(
-      (response) => {
-        console.log('Event Created Successfully:', response);
-        this.loading = false;
-        this.successMessage = 'Event created successfully!';
-        this.eventForm.reset();
-        this.submitted = false;
-        this.showForm = false;
-        this.loadEvents();
-        this.cdr.markForCheck();
-        
-        // Clear success message after 5 seconds
-        setTimeout(() => {
-          this.successMessage = '';
-        }, 5000);
-      },
-      (error) => {
-        console.error('Error Creating Event:', error);
-        this.loading = false;
-        this.errorMessage = error.error?.message || 'Failed to create event. Please try again.';
-        
-        // Clear error message after 5 seconds
-        setTimeout(() => {
-          this.errorMessage = '';
-        }, 5000);
-      }
-    );
+    // Handle edit vs create
+    if (this.editingEventId) {
+      // Update existing event
+      this.eventService.updateEvent(this.editingEventId, eventData).subscribe(
+        (response) => {
+          console.log('Event Updated Successfully:', response);
+          this.loading = false;
+          this.successMessage = 'Event updated successfully!';
+          this.eventForm.reset();
+          this.submitted = false;
+          this.editingEventId = null;
+          this.showForm = false;
+          this.loadEvents();
+          this.cdr.markForCheck();
+          
+          // Clear success message after 5 seconds
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 5000);
+        },
+        (error) => {
+          console.error('Error Updating Event:', error);
+          this.loading = false;
+          this.errorMessage = error.error?.message || 'Failed to update event. Please try again.';
+          
+          // Clear error message after 5 seconds
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 5000);
+          this.cdr.markForCheck();
+        }
+      );
+    } else {
+      // Create new event
+      this.eventService.createEvent(eventData).subscribe(
+        (response) => {
+          console.log('Event Created Successfully:', response);
+          this.loading = false;
+          this.successMessage = 'Event created successfully!';
+          this.eventForm.reset();
+          this.submitted = false;
+          this.showForm = false;
+          this.loadEvents();
+          this.cdr.markForCheck();
+          
+          // Clear success message after 5 seconds
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 5000);
+        },
+        (error) => {
+          console.error('Error Creating Event:', error);
+          this.loading = false;
+          this.errorMessage = error.error?.message || 'Failed to create event. Please try again.';
+          
+          // Clear error message after 5 seconds
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 5000);
+        }
+      );
+    }
   }
 
   resetForm() {
     this.eventForm.reset();
     this.submitted = false;
+    this.editingEventId = null;
     this.cdr.markForCheck();
   }
 
