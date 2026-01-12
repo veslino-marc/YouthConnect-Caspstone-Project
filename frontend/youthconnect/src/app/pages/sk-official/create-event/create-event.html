@@ -40,39 +40,60 @@
                 </div>
             </div>
 
-            <!-- Events Table -->
-            <div *ngIf="!eventsLoading && filteredEvents.length > 0" class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th (click)="onSort('title')" title="Click to sort">
-                                Title <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th (click)="onSort('description')" title="Click to sort">
-                                Description <span *ngIf="sortColumn === 'description'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th (click)="onSort('eventDate')" title="Click to sort">
-                                Date & Time <span *ngIf="sortColumn === 'eventDate'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th (click)="onSort('location')" title="Click to sort">
-                                Location <span *ngIf="sortColumn === 'location'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let event of filteredEvents">
-                            <td title="{{ event.title }}">{{ event.title }}</td>
-                            <td title="{{ event.description }}">{{ event.description }}</td>
-                            <td>{{ event.eventDate | date: 'short' }}</td>
-                            <td>{{ event.location }}</td>
-                            <td class="action-cell">
-                                <button class="btn-edit" (click)="onEdit(event)" title="Edit event">✎ Edit</button>
-                                <button class="btn-delete" (click)="onDelete(event)" title="Delete event">🗑 Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Sort Options -->
+            <div class="sort-options" *ngIf="filteredEvents.length > 0">
+                <span class="sort-label">Sort by:</span>
+                <button 
+                    (click)="onSort('title')" 
+                    [class.active]="sortColumn === 'title'"
+                    class="sort-btn"
+                    title="Sort by title"
+                >
+                    Title <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+                <button 
+                    (click)="onSort('eventDate')" 
+                    [class.active]="sortColumn === 'eventDate'"
+                    class="sort-btn"
+                    title="Sort by date"
+                >
+                    Date <span *ngIf="sortColumn === 'eventDate'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+                <button 
+                    (click)="onSort('location')" 
+                    [class.active]="sortColumn === 'location'"
+                    class="sort-btn"
+                    title="Sort by location"
+                >
+                    Location <span *ngIf="sortColumn === 'location'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+            </div>
+
+            <!-- Event Cards -->
+            <div class="events-grid" *ngIf="filteredEvents.length > 0">
+                <div *ngFor="let event of filteredEvents" class="event-card">
+                    <div class="card-header">
+                        <h2 class="event-title">{{ event.title }}</h2>
+                        <div class="event-date-badge">{{ event.eventDate | date:'MMM d' }}</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="event-description">{{ event.description }}</p>
+                        <div class="event-details">
+                            <div class="detail-item">
+                                <span class="detail-label">📍 Location:</span>
+                                <span class="detail-value">{{ event.location }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">🕐 Time:</span>
+                                <span class="detail-value">{{ event.eventDate | date:'short' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="edit-btn" (click)="onEdit(event)" title="Edit event">✎ Edit</button>
+                        <button class="delete-btn" (click)="onDelete(event)" title="Delete event">🗑 Delete</button>
+                    </div>
+                </div>
             </div>
 
             <!-- No Search Results -->
