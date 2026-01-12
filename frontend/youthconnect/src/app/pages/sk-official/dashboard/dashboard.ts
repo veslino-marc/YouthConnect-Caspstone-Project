@@ -2,7 +2,9 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SkSidebar } from '../../../shared/components/sk-sidebar/sk-sidebar';
 import { EventService } from '../../../services/event.service';
+import { ConcernService } from '../../../services/concern.service';
 import type { Event } from '../../../models/event.model';
+import type { Concern } from '../../../models/concern.model';
 import { DatePipe, CommonModule } from '@angular/common';
 
 interface Task {
@@ -24,9 +26,9 @@ export class Dashboard implements OnInit {
   fullName = '';
 
   // Stats
-  activeTasks = 24;
+  activeTasks = 3;
   upcomingEvents = 0;
-  pendingConcerns = 15;
+  pendingConcerns = 0;
   youthMembers = 342;
 
   // Sample tasks data
@@ -39,18 +41,23 @@ export class Dashboard implements OnInit {
   // Real events data from backend
   events: Event[] = [];
 
+  // Real concerns data from backend
+  concerns: Concern[] = [];
+
   // Modal state
   showEventModal = false;
   selectedEvent: Event | null = null;
 
   constructor(
     private eventService: EventService,
+    private concernService: ConcernService,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.loadUserData();
     this.loadEvents();
+    this.loadConcerns();
   }
 
   loadUserData(): void {
@@ -114,5 +121,32 @@ export class Dashboard implements OnInit {
     this.showEventModal = false;
     this.selectedEvent = null;
     this.cdr.detectChanges();
+  }
+
+  loadConcerns(): void {
+    this.concernService.getAllConcerns().subscribe(
+      (concerns) => {
+        console.log('Dashboard - Fetched concerns:', concerns);
+
+        if (concerns && concerns.length > 0) {
+          // Filter for pending/open concerns
+          const pendingConcerns = concerns.filter(concern =>
+            concern.status?.toLowerCase() === 'open' ||
+            concern.status?.toLowerCase() === 'pending'
+          );
+
+          this.concerns = pendingConcerns.slice(0, 3);
+          this.pendingConcerns = pendingConcerns.length;
+        } else {
+          this.pendingConcerns = 0;
+        }
+
+        this.cdr.detectChanges();
+      },
+      (error) => {
+        console.error('Error loading concerns:', error);
+        this.cdr.detectChanges();
+      }
+    );
   }
 }
