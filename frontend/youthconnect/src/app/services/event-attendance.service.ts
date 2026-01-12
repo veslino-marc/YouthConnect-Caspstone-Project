@@ -9,7 +9,7 @@ import { EventAttendance } from '../models/event-attendance.model';
 export class EventAttendanceService {
   private apiUrl = 'http://localhost:8080/api/event-attendance';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   registerForEvent(attendance: EventAttendance): Observable<EventAttendance> {
     return this.http.post<EventAttendance>(`${this.apiUrl}/register`, attendance);
@@ -21,5 +21,9 @@ export class EventAttendanceService {
 
   getEventAttendance(eventId: number): Observable<EventAttendance[]> {
     return this.http.get<EventAttendance[]>(`${this.apiUrl}/event/${eventId}`);
+  }
+
+  getUserEvents(userId: number): Observable<EventAttendance[]> {
+    return this.http.get<EventAttendance[]>(`${this.apiUrl}/user/${userId}`);
   }
 }
