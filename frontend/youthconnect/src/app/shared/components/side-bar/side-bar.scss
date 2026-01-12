@@ -1,0 +1,92 @@
+// Sidebar Styles
+.sidebar {
+	width: 220px;
+	height: 100vh;
+	background: #0047ba;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: stretch;
+	font-family: 'Montserrat', sans-serif;
+}
+
+.sidebar-header {
+	padding: 24px 0 16px 0;
+	text-align: center;
+}
+
+.logo {
+	color: #fff;
+	font-size: 1.5rem;
+	font-weight: 700;
+	font-family: 'Alfa Slab One', cursive;
+}
+
+.sidebar-menu {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.sidebar-item {
+	display: flex;
+	align-items: center;
+	padding: 12px 24px;
+	color: #fff;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background 0.2s;
+	gap: 12px;
+}
+
+.sidebar-item.active,
+.sidebar-item:hover {
+	background: #2563d6;
+}
+
+.sidebar-item .icon {
+	width: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sidebar-item .icon img {
+	width: 22px;
+	height: 22px;
+}
+
+.sidebar-item .label {
+	flex: 1;
+}
+
+.sidebar-logout {
+	background: #d0021b;
+	padding: 0;
+	margin-top: auto;
+}
+
+.logout-btn {
+	width: 100%;
+	border: none;
+	background: transparent;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	font-size: 1rem;
+	font-family: inherit;
+	padding: 14px 0;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.logout-btn:hover {
+	background: #b00117;
+}
+
+.logout-btn .icon img {
+	width: 22px;
+	height: 22px;
+}
