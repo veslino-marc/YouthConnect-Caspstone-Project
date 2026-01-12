@@ -50,9 +50,13 @@ export class LoginPage {
         next: (response) => {
           console.log('Login success:', response);
           this.isLoading = false;
+          
+          // Store user/admin data in localStorage
           if (this.activeTab === 'youth') {
+            localStorage.setItem('user', JSON.stringify(response));
             this.router.navigate(['/youth-member/dashboard']);
           } else if (this.activeTab === 'sk') {
+            localStorage.setItem('admin', JSON.stringify(response));
             this.router.navigate(['/sk-official/dashboard']);
           }
         },
