@@ -1,7 +1,9 @@
 <div class="landing-wrapper">
   <header class="landing-header">
-    <img src="assets/logo.png" alt="YouthConnect Logo" class="logo" />
-    <span class="brand">YouthConnect</span>
+    <div class="header-left">
+      <img src="assets/youthconnect_logo.png" alt="YouthConnect Logo" class="logo" />
+      <span class="brand">YouthConnect</span>
+    </div>
     <nav class="nav">
       <a href="#" class="nav-link">Mission</a>
       <a href="#" class="nav-link">Vision</a>
@@ -11,28 +13,28 @@
     </nav>
   </header>
   <main class="landing-main">
-    <section class="hero">
+    <div class="animated-bg">
+      <div class="circle circle1"></div>
+      <div class="circle circle2"></div>
+      <div class="circle circle3"></div>
+    </div>
+    <section class="hero fade-in">
       <h1 class="hero-title">
-        <span class="highlight">YouthConnect</span>
-            : A Centralized Web System<br />
-            for Youth Engagement and SK Governance
+        <span class="hero-yellow">Youth</span><span class="hero-white">Connect</span><span class="hero-colon">:</span>
+        <span class="hero-main">A Centralized Web System for Youth Engagement and SK Governance</span>
       </h1>
       <p class="hero-desc">
-        A digital hub where the youth of Barangay 183 can access 
-        announcements, join events, submit concerns, and stay connected
-        with SK initiatives.
+        A digital hub where the youth of Barangay 183 can access announcements, join events, submit concerns, and stay connected with SK initiatives.
       </p>
-      <img 
-        src="assets/youthconnect_logo.png" 
-        alt="YouthConnect Logo" 
-        class="sk-logo" />
+      <div class="sk-logo-wrap">
+        <img 
+          src="assets/youthconnect_logo.png" 
+          alt="YouthConnect Logo" 
+          class="sk-logo" />
+      </div>
       <div class="hero-actions">
         <button class="btn btn-learn">Learn More</button>
-        <button 
-            class="btn btn-join" 
-            routerLink="/register">
-            Join Us!
-        </button>
+        <button class="btn btn-join" routerLink="/register">Join Us!</button>
       </div>
     </section>
   </main>
