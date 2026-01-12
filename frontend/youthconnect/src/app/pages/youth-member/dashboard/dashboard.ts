@@ -24,9 +24,10 @@ interface Notification {
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
-  userName = 'John';
-  userEmail = 'johndoesample@gmail.com';
-  userInitials = 'JD';
+  userName = '';
+  userEmail = '';
+  userInitials = '';
+  fullName = '';
 
   // Stats
   myConcerns = 5;
@@ -79,6 +80,24 @@ export class Dashboard implements OnInit {
   ];
 
   ngOnInit(): void {
-    // TODO: Fetch actual user data and stats from services
+    this.loadUserData();
+  }
+
+  loadUserData(): void {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      const firstName = user.firstName || '';
+      const lastName = user.lastName || '';
+
+      this.userName = firstName;
+      this.fullName = `${firstName} ${lastName}`.trim();
+      this.userEmail = user.email || '';
+
+      // Generate initials from first and last name
+      const firstInitial = firstName.charAt(0).toUpperCase();
+      const lastInitial = lastName.charAt(0).toUpperCase();
+      this.userInitials = `${firstInitial}${lastInitial}`;
+    }
   }
 }

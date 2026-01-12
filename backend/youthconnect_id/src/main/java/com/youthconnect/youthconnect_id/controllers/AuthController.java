@@ -2,8 +2,11 @@ package com.youthconnect.youthconnect_id.controllers;
 
 import com.youthconnect.youthconnect_id.models.User;
 import com.youthconnect.youthconnect_id.models.Admin;
+import com.youthconnect.youthconnect_id.models.YouthProfile;
+import com.youthconnect.youthconnect_id.models.dto.LoginResponseDTO;
 import com.youthconnect.youthconnect_id.repositories.UserRepository;
 import com.youthconnect.youthconnect_id.repositories.AdminRepository;
+import com.youthconnect.youthconnect_id.repositories.YouthProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,9 @@ public class AuthController {
     
     @Autowired
     private AdminRepository adminRepository;
+
+    @Autowired
+    private YouthProfileRepository youthProfileRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -35,7 +41,23 @@ public class AuthController {
                 System.out.println("Password hash from DB: " + user.getPasswordHash());
                 if (user.getPasswordHash().equals(loginRequest.getPassword())) {
                     System.out.println("Password matches!");
-                    return ResponseEntity.ok(user);
+                    
+                    // Fetch youth profile using userId as youthId
+                    YouthProfile youthProfile = youthProfileRepository.findById(user.getUserId()).orElse(null);
+                    
+                    LoginResponseDTO response = new LoginResponseDTO();
+                    response.setUserId(user.getUserId());
+                    response.setEmail(user.getEmail());
+                    response.setRole("youth");
+                    
+                    if (youthProfile != null) {
+                        response.setYouthId(youthProfile.getYouthId());
+                        response.setFirstName(youthProfile.getFirstName());
+                        response.setMiddleName(youthProfile.getMiddleName());
+                        response.setLastName(youthProfile.getLastName());
+                    }
+                    
+                    return ResponseEntity.ok(response);
                 } else {
                     System.out.println("Password does not match!");
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");

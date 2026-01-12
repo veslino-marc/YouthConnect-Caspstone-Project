@@ -49,6 +49,19 @@ $red: #c62828;
     display: flex;
     align-items: center;
     gap: 10px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: rgba(0, 71, 186, 0.05);
+
+        .avatar {
+            transform: scale(1.08);
+            box-shadow: 0 0 0 3px rgba(0, 71, 186, 0.2);
+        }
+    }
 }
 
 .avatar {
@@ -63,6 +76,7 @@ $red: #c62828;
     font-weight: 700;
     font-size: 1rem;
     border: 3px solid $red;
+    transition: all 0.3s ease;
 }
 
 
@@ -96,6 +110,19 @@ $red: #c62828;
     padding: 20px 16px;
     text-align: center;
     border: 2px solid $primary-blue;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 71, 186, 0.2);
+        border-color: $yellow;
+        background: linear-gradient(135deg, $white 0%, #f8f9ff 100%);
+
+        .stat-number {
+            transform: scale(1.05);
+        }
+    }
 
     .stat-number {
         display: block;
@@ -103,6 +130,7 @@ $red: #c62828;
         font-weight: 700;
         color: $primary-blue;
         margin-bottom: 4px;
+        transition: transform 0.3s ease;
     }
 
     .stat-label {
@@ -153,6 +181,15 @@ $red: #c62828;
     background: $white;
     border-radius: 0 8px 8px 0;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateX(6px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-left-color: $primary-blue;
+        background: linear-gradient(90deg, #fffef5 0%, $white 100%);
+    }
 
     .event-date {
         color: $primary-blue;
@@ -230,16 +267,29 @@ $red: #c62828;
 }
 
 .notification-item {
-    padding: 14px 0;
+    padding: 14px 12px;
     border-bottom: 1px solid $border-color;
+    border-radius: 8px;
+    margin: 0 -12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: #fef5f5;
+        border-bottom-color: transparent;
+
+        .notification-title {
+            color: $red;
+        }
+    }
 
     &:first-child {
-        padding-top: 0;
+        padding-top: 8px;
     }
 
     &:last-child {
         border-bottom: none;
-        padding-bottom: 0;
+        padding-bottom: 8px;
     }
 
     .notification-title {
@@ -247,6 +297,7 @@ $red: #c62828;
         color: $text-dark;
         font-size: 0.9rem;
         margin-bottom: 2px;
+        transition: color 0.3s ease;
     }
 
     .notification-message {
