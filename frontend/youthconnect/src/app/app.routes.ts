@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LandingPage } from './pages/landing-page/landing-page';
 import { LoginPage } from './pages/login-page/login-page';
+import { RegisterPage } from './pages/register-page/register-page';
 // Youth Member pages
 import { Dashboard as YouthDashboard } from './pages/youth-member/dashboard/dashboard';
 import { CreateConcern } from './pages/youth-member/create-concern/create-concern';
@@ -16,6 +17,7 @@ import { TaskTracker } from './pages/sk-official/task-tracker/task-tracker';
 export const routes: Routes = [
   { path: '', component: LandingPage },
   { path: 'login', component: LoginPage },
+  { path: 'register', component: RegisterPage },
   // Youth Member routes
   { path: 'youth-member/dashboard', component: YouthDashboard },
   { path: 'youth-member/create-concern', component: CreateConcern },
