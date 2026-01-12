@@ -23,7 +23,7 @@ public class Event {
     @Column(name = "location", length = 255)
     private String location;
 
-    @Column(name = "status", length = 50)
+    @Column(name = "status", columnDefinition = "ENUM('waiting','ongoing','completed','deleted')", nullable = false)
     private String status;
 
     @Column(name = "created_by_admin_id")
@@ -38,6 +38,9 @@ public class Event {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (status == null || status.isEmpty()) {
+            status = "waiting";
+        }
     }
 
     @PreUpdate

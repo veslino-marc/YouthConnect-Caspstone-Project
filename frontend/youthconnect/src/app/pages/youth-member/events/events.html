@@ -73,8 +73,12 @@
                             </div>
                             <div class="detail-item" *ngIf="event.status">
                                 <span class="detail-label">Status:</span>
-                                <span class="status-badge" [class.status-ongoing]="event.status === 'ongoing'" [class.status-completed]="event.status === 'completed'">
-                                    {{ event.status === 'ongoing' ? '🔄 Ongoing' : '✓ Completed' }}
+                                <span class="status-badge" 
+                                    [class.status-waiting]="event.status === 'waiting'"
+                                    [class.status-ongoing]="event.status === 'ongoing'" 
+                                    [class.status-completed]="event.status === 'completed'"
+                                    [class.status-deleted]="event.status === 'deleted'">
+                                    {{ getStatusDisplay(event.status) }}
                                 </span>
                             </div>
                         </div>

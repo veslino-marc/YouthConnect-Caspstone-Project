@@ -249,4 +249,19 @@ export class Events implements OnInit {
       }
     });
   }
+
+  getStatusDisplay(status: string | undefined): string {
+    switch (status) {
+      case 'waiting':
+        return '⏳ Waiting';
+      case 'ongoing':
+        return '🔄 Ongoing';
+      case 'completed':
+        return '✓ Completed';
+      case 'deleted':
+        return '🗑️ Deleted';
+      default:
+        return status || 'Unknown';
+    }
+  }
 }
