@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tbl_youth_classification")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class YouthClassification {
     
     @Id
@@ -39,4 +36,91 @@ public class YouthClassification {
     
     @Column(name = "non_attendance_reason")
     private String nonAttendanceReason;
+    
+    public YouthClassification() {
+    }
+    
+    public YouthClassification(Integer youthId, String youthClassification, String educationBackground, String workStatus, Boolean skVoter, Boolean nationalVoter, Boolean pastVoter, Integer numAttendedAssemblies, String nonAttendanceReason) {
+        this.youthId = youthId;
+        this.youthClassification = youthClassification;
+        this.educationBackground = educationBackground;
+        this.workStatus = workStatus;
+        this.skVoter = skVoter;
+        this.nationalVoter = nationalVoter;
+        this.pastVoter = pastVoter;
+        this.numAttendedAssemblies = numAttendedAssemblies;
+        this.nonAttendanceReason = nonAttendanceReason;
+    }
+    
+    public Integer getYouthId() {
+        return youthId;
+    }
+    
+    public void setYouthId(Integer youthId) {
+        this.youthId = youthId;
+    }
+    
+    public String getYouthClassification() {
+        return youthClassification;
+    }
+    
+    public void setYouthClassification(String youthClassification) {
+        this.youthClassification = youthClassification;
+    }
+    
+    public String getEducationBackground() {
+        return educationBackground;
+    }
+    
+    public void setEducationBackground(String educationBackground) {
+        this.educationBackground = educationBackground;
+    }
+    
+    public String getWorkStatus() {
+        return workStatus;
+    }
+    
+    public void setWorkStatus(String workStatus) {
+        this.workStatus = workStatus;
+    }
+    
+    public Boolean getSkVoter() {
+        return skVoter;
+    }
+    
+    public void setSkVoter(Boolean skVoter) {
+        this.skVoter = skVoter;
+    }
+    
+    public Boolean getNationalVoter() {
+        return nationalVoter;
+    }
+    
+    public void setNationalVoter(Boolean nationalVoter) {
+        this.nationalVoter = nationalVoter;
+    }
+    
+    public Boolean getPastVoter() {
+        return pastVoter;
+    }
+    
+    public void setPastVoter(Boolean pastVoter) {
+        this.pastVoter = pastVoter;
+    }
+    
+    public Integer getNumAttendedAssemblies() {
+        return numAttendedAssemblies;
+    }
+    
+    public void setNumAttendedAssemblies(Integer numAttendedAssemblies) {
+        this.numAttendedAssemblies = numAttendedAssemblies;
+    }
+    
+    public String getNonAttendanceReason() {
+        return nonAttendanceReason;
+    }
+    
+    public void setNonAttendanceReason(String nonAttendanceReason) {
+        this.nonAttendanceReason = nonAttendanceReason;
+    }
 }
