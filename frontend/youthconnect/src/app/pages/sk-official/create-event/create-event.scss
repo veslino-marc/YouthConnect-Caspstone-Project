@@ -42,10 +42,11 @@ $text-muted: #6c757d;
 }
 
 // Page Header
+
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 32px;
 
   @media (max-width: 768px) {
@@ -56,25 +57,28 @@ $text-muted: #6c757d;
 }
 
 .add-button {
-  padding: 10px 20px;
+  padding: 16px 36px;
+  min-width: 180px;
   background-color: $primary-color;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 82, 204, 0.08);
+  align-self: flex-end;
 
   &:hover:not(:disabled) {
     background-color: darken($primary-color, 10%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 82, 204, 0.2);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 6px 18px rgba(0, 82, 204, 0.18);
   }
 
   &:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 
   &:disabled {
