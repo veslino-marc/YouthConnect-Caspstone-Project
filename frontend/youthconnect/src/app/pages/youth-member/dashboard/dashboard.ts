@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { YouthSidebar } from '../../../shared/components/youth-sidebar/youth-sidebar';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  standalone: true,
+  imports: [YouthSidebar],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })

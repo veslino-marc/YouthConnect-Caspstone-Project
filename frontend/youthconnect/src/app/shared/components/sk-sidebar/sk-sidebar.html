@@ -4,42 +4,52 @@
 	</div>
 	<ul class="sidebar-menu">
 		<li class="sidebar-item">
-			<span class="icon">
-                <img src="assets/icons/dashboard.svg" alt="Dashboard" />
-            </span>
-			<span class="label">Dashboard</span>
+			<a routerLink="/sk-official/dashboard" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/dashboard.svg" alt="Dashboard" />
+				</span>
+				<span class="label">Dashboard</span>
+			</a>
 		</li>
 		<li class="sidebar-item">
-			<span class="icon">
-                <img src="assets/icons/profile.svg" alt="Manage Profiling" />
-            </span>
-			<span class="label">Manage Profiling</span>
+			<a routerLink="/sk-official/manage-profiling" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/profile.svg" alt="Manage Profiling" />
+				</span>
+				<span class="label">Manage Profiling</span>
+			</a>
 		</li>
 		<li class="sidebar-item">
-			<span class="icon">
-                <img src="assets/icons/task.svg" alt="Task Tracker" />
-            </span>
-			<span class="label">Task Tracker</span>
+			<a routerLink="/sk-official/task-tracker" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/task.svg" alt="Task Tracker" />
+				</span>
+				<span class="label">Task Tracker</span>
+			</a>
 		</li>
 		<li class="sidebar-item">
-			<span class="icon">
-                <img src="assets/icons/event.svg" alt="Create Event" />
-            </span>
-			<span class="label">Create Event</span>
+			<a routerLink="/sk-official/create-event" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/event.svg" alt="Create Event" />
+				</span>
+				<span class="label">Create Event</span>
+			</a>
 		</li>
 		<li class="sidebar-item">
-			<span class="icon">
-                <img src="assets/icons/concern.svg" alt="Concerns" />
-            </span>
-			<span class="label">Concerns</span>
+			<a routerLink="/sk-official/concerns" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/concern.svg" alt="Concerns" />
+				</span>
+				<span class="label">Concerns</span>
+			</a>
 		</li>
 	</ul>
 	<div class="sidebar-logout">
-		<button class="logout-btn">
+		<a class="logout-btn" routerLink="/login">
 			<span class="icon">
-                <img src="assets/icons/logout.svg" alt="Logout" />
-            </span>
+				<img src="/assets/icons/logout.svg" alt="Logout" />
+			</span>
 			<span class="label">Logout</span>
-		</button>
+		</a>
 	</div>
 </nav>

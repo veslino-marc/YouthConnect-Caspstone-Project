@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { SkSidebar } from '../../../shared/components/sk-sidebar/sk-sidebar';
 
 @Component({
   selector: 'app-task-tracker',
-  imports: [],
+  standalone: true,
+  imports: [SkSidebar],
   templateUrl: './task-tracker.html',
   styleUrl: './task-tracker.scss',
 })
