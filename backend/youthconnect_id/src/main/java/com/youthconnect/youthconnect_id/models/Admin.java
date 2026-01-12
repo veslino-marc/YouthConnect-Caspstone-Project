@@ -31,7 +31,6 @@ public class Admin {
     @Column(name = "created_at")
     private java.sql.Timestamp createdAt;
 
-    // Getters and setters
     public Integer getAdminId() {
         return adminId;
     }

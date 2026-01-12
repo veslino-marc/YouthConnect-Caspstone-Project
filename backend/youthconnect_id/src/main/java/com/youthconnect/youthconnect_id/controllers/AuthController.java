@@ -27,7 +27,6 @@ public class AuthController {
         System.out.println("Role is null? " + (loginRequest.getRole() == null));
         System.out.println("Password: " + loginRequest.getPassword());
         
-        // Check if it's a youth member login (from tbl_user)
         if ("youth".equals(loginRequest.getRole())) {
             System.out.println("Authenticating as YOUTH MEMBER from tbl_user");
             User user = userRepository.findByEmail(loginRequest.getEmail());
@@ -46,7 +45,6 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
             }
         }
-        // Check if it's an SK official login (from tbl_admin)
         else if ("sk".equals(loginRequest.getRole())) {
             System.out.println("Authenticating as SK OFFICIAL from tbl_admin");
             Admin admin = adminRepository.findByEmail(loginRequest.getEmail());
