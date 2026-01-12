@@ -19,19 +19,19 @@
 
         <!-- Stats Cards -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card blue-border">
                 <span class="stat-number">{{ myConcerns }}</span>
                 <span class="stat-label">My Concerns</span>
             </div>
-            <div class="stat-card">
+            <div class="stat-card red-border">
                 <span class="stat-number">{{ upcomingEvents }}</span>
                 <span class="stat-label">Upcoming Events</span>
             </div>
-            <div class="stat-card">
+            <div class="stat-card green-border">
                 <span class="stat-number">{{ eventsJoined }}</span>
                 <span class="stat-label">Events Joined</span>
             </div>
-            <div class="stat-card">
+            <div class="stat-card yellow-border">
                 <span class="stat-number">{{ resolvedConcerns }}</span>
                 <span class="stat-label">Resolved Concerns</span>
             </div>
@@ -73,11 +73,11 @@
         <!-- Action Buttons -->
         <div class="action-buttons">
             <button class="btn-action btn-concern" routerLink="/youth-member/create-concern">
-                <img src="assets/icons/concern.svg" alt="Concern" class="btn-icon">
+                <span class="btn-icon">📋</span>
                 Create Concern
             </button>
             <button class="btn-action btn-events" routerLink="/youth-member/events">
-                <img src="assets/icons/event.svg" alt="Events" class="btn-icon">
+                <span class="btn-icon">📅</span>
                 Browse Events
             </button>
         </div>
