@@ -6,6 +6,7 @@ $border-color: #ddd;
 $text-dark: #222;
 $text-muted: #666;
 $red: #c62828;
+$green: #2e7d32;
 
 .dashboard-container {
     display: flex;
@@ -109,15 +110,29 @@ $red: #c62828;
     border-radius: 12px;
     padding: 20px 16px;
     text-align: center;
-    border: 2px solid $primary-blue;
+    border-left: 4px solid transparent;
     cursor: pointer;
     transition: all 0.3s ease;
 
+    &.blue-border {
+        border-left-color: $primary-blue;
+    }
+
+    &.red-border {
+        border-left-color: $red;
+    }
+
+    &.green-border {
+        border-left-color: $green;
+    }
+
+    &.yellow-border {
+        border-left-color: $yellow;
+    }
+
     &:hover {
         transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0, 71, 186, 0.2);
-        border-color: $yellow;
-        background: linear-gradient(135deg, $white 0%, #f8f9ff 100%);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 
         .stat-number {
             transform: scale(1.05);
@@ -242,9 +257,7 @@ $red: #c62828;
     color: $text-dark;
 
     .btn-icon {
-        width: 18px;
-        height: 18px;
-        filter: brightness(0);
+        font-size: 1rem;
     }
 
     &:hover {
