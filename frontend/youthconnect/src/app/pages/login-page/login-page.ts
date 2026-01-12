@@ -27,8 +27,10 @@ export class LoginPage {
     const email = data.get('email') as string | null;
     const password = data.get('password') as string | null;
 
-    this.http.post('http://localhost:8080/api/login', { email, password })
-      .subscribe({
+    this.http.post('http://localhost:8080/api/login', { 
+      email, 
+      password 
+    }).subscribe({
         next: (response) => {
           if (this.activeTab === 'youth') {
             this.router.navigate(['/youth-member/dashboard']);
