@@ -1,0 +1,489 @@
+// YouthConnect Concerns Page Styling
+$primary-color: #0052cc;
+$secondary-color: #0052cc;
+$success-color: #28a745;
+$danger-color: #dc3545;
+$warning-color: #ffc107;
+$light-bg: #f8f9fa;
+$border-color: #dee2e6;
+$text-dark: #212529;
+$text-muted: #6c757d;
+
+.concerns-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: $light-bg;
+
+  .concerns-content {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+
+    h1 {
+      color: $text-dark;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-subtitle {
+      color: $text-muted;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+  }
+}
+
+// Loading & Error States
+.loading-state,
+.error-state,
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.loading-state {
+  color: $primary-color;
+  font-size: 16px;
+  background: rgba(0, 82, 204, 0.05);
+  border: 1px solid rgba(0, 82, 204, 0.1);
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border: 2px solid $primary-color;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+  }
+}
+
+.error-state {
+  color: $danger-color;
+  background: rgba(220, 53, 69, 0.05);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.empty-state {
+  color: $text-muted;
+  background: rgba(108, 117, 125, 0.05);
+  border: 1px solid $border-color;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Search, Filter & Export Bar
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto;
+  gap: 12px;
+  margin-bottom: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+
+    .search-input {
+      grid-column: 1;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .export-buttons {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+  }
+}
+
+.search-input {
+  input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+    }
+
+    &::placeholder {
+      color: $text-muted;
+    }
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+
+  select {
+    padding: 10px 12px;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    color: $text-dark;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+    }
+
+    &:hover {
+      border-color: $primary-color;
+    }
+  }
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
+
+  button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &.export-csv {
+      background-color: #1976d2;
+
+      &:hover:not(:disabled) {
+        background-color: #1565c0;
+      }
+    }
+
+    &.export-pdf {
+      background-color: #388e3c;
+
+      &:hover:not(:disabled) {
+        background-color: #2e7d32;
+      }
+    }
+  }
+}
+
+// Table Styling
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background: linear-gradient(135deg, #0052cc 0%, #003fa3 100%);
+      color: white;
+      font-weight: 600;
+
+      th {
+        padding: 16px;
+        text-align: left;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        user-select: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+
+        &:hover {
+          background: linear-gradient(135deg, #0052cc 0%, #003fa3 100%);
+          opacity: 0.9;
+        }
+
+        span {
+          margin-left: 6px;
+          font-size: 11px;
+          opacity: 0.8;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $border-color;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: rgba(0, 82, 204, 0.02);
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        td {
+          padding: 14px 16px;
+          font-size: 14px;
+          color: $text-dark;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
+          &:nth-child(3) {
+            // Description column - allow text wrap
+            white-space: normal;
+            max-width: 300px;
+          }
+
+          &:nth-child(4) {
+            // Status column
+            .status-badge {
+              display: inline-block;
+              padding: 4px 12px;
+              border-radius: 20px;
+              font-size: 12px;
+              font-weight: 600;
+              letter-spacing: 0.5px;
+
+              &.status-open {
+                background-color: rgba(220, 53, 69, 0.1);
+                color: #dc3545;
+              }
+
+              &.status-closed {
+                background-color: rgba(40, 167, 69, 0.1);
+                color: #28a745;
+              }
+
+              &.status-in-progress {
+                background-color: rgba(255, 193, 7, 0.1);
+                color: #ff9800;
+              }
+
+              &.status-pending {
+                background-color: rgba(0, 82, 204, 0.1);
+                color: #0052cc;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Action Buttons
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  white-space: nowrap;
+
+  button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.delete-btn {
+      background-color: #dc3545;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #c82333;
+        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Pagination Styling
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .pagination-info {
+    font-size: 14px;
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .pagination-btn {
+      padding: 8px 12px;
+      border: 1px solid $border-color;
+      background-color: white;
+      color: $primary-color;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+
+      &:hover:not(:disabled) {
+        background-color: rgba(0, 82, 204, 0.08);
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background-color: transparent;
+      }
+
+      &.active {
+        background-color: $primary-color;
+        color: white;
+        border-color: $primary-color;
+
+        &:hover {
+          background-color: #0041a3;
+        }
+      }
+    }
+
+    .page-buttons {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+
+      .ellipsis {
+        padding: 0 6px;
+        color: $text-muted;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .concerns-container {
+    .concerns-content {
+      padding: 24px;
+    }
+  }
+
+  .table-container {
+    table {
+      font-size: 13px;
+
+      thead th,
+      tbody td {
+        padding: 12px;
+      }
+    }
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    .pagination-info {
+      width: 100%;
+    }
+
+    .pagination-controls {
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .concerns-container {
+    flex-direction: column;
+
+    .concerns-content {
+      padding: 16px;
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .table-container {
+    table {
+      font-size: 12px;
+
+      thead th,
+      tbody td {
+        padding: 10px;
+      }
+
+      thead th span {
+        display: block;
+        font-size: 10px;
+      }
+    }
+  }
+}

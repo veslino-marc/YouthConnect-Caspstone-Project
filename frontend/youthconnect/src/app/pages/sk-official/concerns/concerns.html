@@ -1,7 +1,168 @@
-<div style="display: flex;">
+
+<div class="concerns-container">
     <app-sk-sidebar></app-sk-sidebar>
-    <div style="flex: 1; padding: 20px;">
-        <h1>Concerns</h1>
-        <p>concerns works!</p>
+    <div class="concerns-content">
+        <h1>Youth Concerns</h1>
+        <p class="page-subtitle">Manage and track all youth member concerns</p>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-state">Loading concerns...</div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
+
+        <!-- Main Content -->
+        <div *ngIf="!loading && concerns.length > 0">
+            <!-- Search, Filter & Export Toolbar -->
+            <div class="toolbar">
+                <div class="search-input">
+                    <input 
+                        type="text" 
+                        [(ngModel)]="searchTerm" 
+                        (input)="onSearchChange()" 
+                        placeholder="Search concerns by title, type, or description..."
+                    />
+                </div>
+                <div class="filters">
+                    <select [(ngModel)]="filterType" (ngModelChange)="onTypeFilterChange($event)">
+                        <option value="">All Types</option>
+                        <option *ngFor="let type of getTypeOptions()" [value]="type">{{ type }}</option>
+                    </select>
+                </div>
+                <div class="filters">
+                    <select [(ngModel)]="filterStatus" (ngModelChange)="onStatusFilterChange($event)">
+                        <option value="">All Status</option>
+                        <option *ngFor="let status of getStatusOptions()" [value]="status">{{ status }}</option>
+                    </select>
+                </div>
+                <div class="export-buttons">
+                    <button class="export-csv" (click)="exportToCSV()" title="Export filtered concerns to CSV">📥 CSV</button>
+                    <button class="export-pdf" (click)="exportToPDF()" title="Export filtered concerns to PDF">📄 PDF</button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container" *ngIf="filteredConcerns.length > 0">
+                <table>
+                    <thead>
+                        <tr>
+                            <th (click)="onSort('title')" title="Click to sort">
+                                Title <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                            <th (click)="onSort('typeOfConcern')" title="Click to sort">
+                                Type <span *ngIf="sortColumn === 'typeOfConcern'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                            <th (click)="onSort('description')" title="Click to sort">
+                                Description <span *ngIf="sortColumn === 'description'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                            <th (click)="onSort('status')" title="Click to sort">
+                                Status <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                            <th (click)="onSort('createdAt')" title="Click to sort">
+                                Created <span *ngIf="sortColumn === 'createdAt'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                            </th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let concern of paginatedConcerns">
+                            <td title="{{ concern.title }}">{{ concern.title }}</td>
+                            <td title="{{ concern.typeOfConcern }}">{{ concern.typeOfConcern }}</td>
+                            <td title="{{ concern.description }}">{{ concern.description }}</td>
+                            <td>
+                                <span 
+                                    class="status-badge"
+                                    [ngClass]="{
+                                        'status-open': concern.status === 'Open',
+                                        'status-closed': concern.status === 'Closed',
+                                        'status-in-progress': concern.status === 'In Progress',
+                                        'status-pending': concern.status === 'Pending'
+                                    }"
+                                >
+                                    {{ concern.status }}
+                                </span>
+                            </td>
+                            <td title="{{ concern.createdAt | date:'medium' }}">{{ concern.createdAt | date:'short' }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button 
+                                        class="delete-btn"
+                                        (click)="onDelete(concern)"
+                                        [disabled]="deletingId === concern.concernId"
+                                        [title]="deletingId === concern.concernId ? 'Deleting...' : 'Delete this concern'"
+                                    >
+                                        {{ deletingId === concern.concernId ? '⏳' : '🗑️' }}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container" *ngIf="totalPages > 1">
+                <div class="pagination-info">
+                    Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, filteredConcerns.length) }} of {{ filteredConcerns.length }} concerns
+                </div>
+                <div class="pagination-controls">
+                    <button 
+                        class="pagination-btn" 
+                        (click)="onPageChange(currentPage - 1)" 
+                        [disabled]="currentPage === 1"
+                        title="Previous page"
+                    >
+                        ◀ Previous
+                    </button>
+                    <div class="page-buttons">
+                        <button 
+                            *ngIf="getPageNumbers()[0] > 1"
+                            class="pagination-btn"
+                            (click)="onPageChange(1)"
+                            title="Go to first page"
+                        >
+                            1
+                        </button>
+                        <span *ngIf="getPageNumbers()[0] > 2" class="ellipsis">...</span>
+                        <button 
+                            *ngFor="let page of getPageNumbers()"
+                            class="pagination-btn"
+                            [class.active]="page === currentPage"
+                            (click)="onPageChange(page)"
+                            [title]="'Go to page ' + page"
+                        >
+                            {{ page }}
+                        </button>
+                        <span *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages - 1" class="ellipsis">...</span>
+                        <button 
+                            *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages"
+                            class="pagination-btn"
+                            (click)="onPageChange(totalPages)"
+                            [title]="'Go to last page'"
+                        >
+                            {{ totalPages }}
+                        </button>
+                    </div>
+                    <button 
+                        class="pagination-btn" 
+                        (click)="onPageChange(currentPage + 1)" 
+                        [disabled]="currentPage === totalPages"
+                        title="Next page"
+                    >
+                        Next ▶
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty Filter Results -->
+            <div *ngIf="filteredConcerns.length === 0" class="empty-state">
+                <p>No concerns match your search criteria. Try adjusting your filters.</p>
+            </div>
+        </div>
+
+        <!-- No Data State -->
+        <div *ngIf="!loading && concerns.length === 0" class="empty-state">
+            <p>No concerns found. Youth members will be able to submit concerns here.</p>
+        </div>
     </div>
 </div>
