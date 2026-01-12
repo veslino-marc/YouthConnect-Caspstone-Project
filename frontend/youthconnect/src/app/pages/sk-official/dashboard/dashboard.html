@@ -1,7 +1,88 @@
-<div style="display: flex;">
+<div class="dashboard-container">
     <app-sk-sidebar></app-sk-sidebar>
-    <div style="flex: 1; padding: 20px;">
-        <h1>SK Official Dashboard</h1>
-        <p>dashboard works!</p>
+
+    <div class="dashboard-content">
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <div class="welcome-section">
+                <h1>Welcome, {{ userName }}!</h1>
+                <p class="email">{{ userEmail }}</p>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">{{ userInitials }}</div>
+                <div class="user-info">
+                    <span class="name">{{ fullName }}</span>
+                    <span class="role">SK Official</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card blue-border">
+                <span class="stat-number">{{ activeTasks }}</span>
+                <span class="stat-label">Active Tasks</span>
+            </div>
+            <div class="stat-card red-border">
+                <span class="stat-number">{{ upcomingEvents }}</span>
+                <span class="stat-label">Upcoming Events</span>
+            </div>
+            <div class="stat-card green-border">
+                <span class="stat-number">{{ pendingConcerns }}</span>
+                <span class="stat-label">Pending Concerns</span>
+            </div>
+            <div class="stat-card yellow-border">
+                <span class="stat-number">{{ youthMembers }}</span>
+                <span class="stat-label">Youth Members</span>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Upcoming Events Section -->
+            <div class="events-section">
+                <h2 class="section-title">Upcoming Events</h2>
+                <div class="events-list">
+                    @for (event of events; track event.id) {
+                    <div class="event-card">
+                        <div class="event-date">{{ event.date }} - {{ event.time }}</div>
+                        <div class="event-name">{{ event.name }}</div>
+                        <div class="event-location">
+                            <span class="location-icon">📍</span>
+                            {{ event.location }}
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Recent Tasks Section -->
+            <div class="tasks-section">
+                <h2 class="section-title">Recent Tasks</h2>
+                <div class="tasks-list">
+                    @for (task of tasks; track task.id) {
+                    <div class="task-card">
+                        <div class="task-title">{{ task.title }}</div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn-action btn-task" routerLink="/sk-official/task-tracker">
+                <span class="btn-icon">📝</span>
+                New Task
+            </button>
+            <button class="btn-action btn-event" routerLink="/sk-official/create-event">
+                <span class="btn-icon">📅</span>
+                New Event
+            </button>
+            <button class="btn-action btn-concern" routerLink="/sk-official/concerns">
+                <span class="btn-icon">📋</span>
+                View Concern
+            </button>
+        </div>
     </div>
 </div>
