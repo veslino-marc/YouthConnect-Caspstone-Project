@@ -1,7 +1,80 @@
 <div style="display: flex;">
     <app-youth-sidebar></app-youth-sidebar>
     <div style="flex: 1; padding: 20px;">
-        <h1>Create Concerns</h1>
-        <p>Concers works!</p>
+        <h1>Create Concern</h1>
+
+        <!-- Success Message -->
+        <div *ngIf="successMessage" class="alert alert-success">
+            {{ successMessage }}
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="alert alert-error">
+            {{ errorMessage }}
+        </div>
+
+        <form [formGroup]="concernForm" (ngSubmit)="onSubmit()" class="concern-form-container">
+            <div class="form-group">
+                <label for="title" style="display: block; margin-bottom: 5px; font-weight: bold;">Title</label>
+                <input
+                    type="text"
+                    id="title"
+                    formControlName="title"
+                    placeholder="Enter concern title"
+                    class="form-input"
+                />
+                <div *ngIf="submitted && title?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                    <span *ngIf="title?.errors?.['required']">Title is required</span>
+                    <span *ngIf="title?.errors?.['minlength']">Title must be at least 3 characters</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="typeOfConcern" style="display: block; margin-bottom: 5px; font-weight: bold;">Type of Concern</label>
+                <select
+                    id="typeOfConcern"
+                    formControlName="typeOfConcern"
+                    class="form-input"
+                >
+                    <option value="" disabled selected>Select type</option>
+                    <option *ngFor="let option of typeOfConcernOptions" [value]="option.value">{{ option.label }}</option>
+                </select>
+                <div *ngIf="submitted && typeOfConcern?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                    <span *ngIf="typeOfConcern?.errors?.['required']">Type of concern is required</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description" style="display: block; margin-bottom: 5px; font-weight: bold;">Description</label>
+                <textarea
+                    id="description"
+                    formControlName="description"
+                    placeholder="Enter concern description"
+                    rows="5"
+                    class="form-textarea"
+                ></textarea>
+                <div *ngIf="submitted && description?.invalid" style="color: red; font-size: 12px; margin-top: 5px;">
+                    <span *ngIf="description?.errors?.['required']">Description is required</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button
+                    type="submit"
+                    [disabled]="loading"
+                    style="padding: 10px 20px; background-color: #0047AB; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;"
+                >
+                    {{ loading ? 'Submitting...' : 'Submit Concern' }}
+                </button>
+                <button
+                    type="button"
+                    (click)="resetForm()"
+                    [disabled]="loading"
+                    style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;"
+                >
+                    Reset
+                </button>
+            </div>
+        </form>
     </div>
 </div>
