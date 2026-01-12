@@ -24,6 +24,8 @@ export class CreateEvent implements OnInit {
   showForm = false;
   eventsLoading = false;
   editingEventId: number | null = null;
+  showEventModal = false;
+  selectedEvent: Event | null = null;
 
   // Search and sort state
   searchTerm = '';
@@ -350,5 +352,17 @@ export class CreateEvent implements OnInit {
 
   get location() {
     return this.eventForm.get('location');
+  }
+
+  openEventModal(event: Event) {
+    this.selectedEvent = event;
+    this.showEventModal = true;
+    this.cdr.markForCheck();
+  }
+
+  closeEventModal() {
+    this.showEventModal = false;
+    this.selectedEvent = null;
+    this.cdr.markForCheck();
   }
 }
