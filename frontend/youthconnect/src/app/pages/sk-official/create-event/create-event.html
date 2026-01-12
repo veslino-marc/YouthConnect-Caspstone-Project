@@ -34,6 +34,10 @@
                         placeholder="Search events by title, description, or location..."
                     />
                 </div>
+                <div class="export-buttons">
+                    <button class="export-csv" (click)="exportToCSV()" title="Export filtered events to CSV">📥 CSV</button>
+                    <button class="export-pdf" (click)="exportToPDF()" title="Export filtered events to PDF">📄 PDF</button>
+                </div>
             </div>
 
             <!-- Events Table -->

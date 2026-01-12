@@ -123,6 +123,55 @@ export class CreateEvent implements OnInit {
     this.filteredEvents = filtered;
   }
 
+  // Export filtered events to CSV
+  exportToCSV() {
+    const headers = ['Title', 'Description', 'Date & Time', 'Location'];
+    const rows = this.filteredEvents.map(e => [
+      e.title,
+      e.description,
+      e.eventDate ? new Date(e.eventDate).toLocaleString() : '',
+      e.location
+    ]);
+    let csvContent = '';
+    csvContent += headers.join(',') + '\n';
+    rows.forEach(row => {
+      csvContent += row.map(field => '"' + (field ? String(field).replace(/"/g, '""') : '') + '"').join(',') + '\n';
+    });
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'events.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  // Export filtered events to PDF
+  async exportToPDF() {
+    // Dynamically import jsPDF and autoTable
+    const jsPDFModule = await import('jspdf');
+    const autoTableModule = await import('jspdf-autotable');
+    const doc = new jsPDFModule.jsPDF();
+    const headers = [['Title', 'Description', 'Date & Time', 'Location']];
+    const rows = this.filteredEvents.map(e => [
+      e.title,
+      e.description,
+      e.eventDate ? new Date(e.eventDate).toLocaleString() : '',
+      e.location
+    ]);
+    (autoTableModule as any).default(doc, {
+      head: headers,
+      body: rows,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [0, 82, 204] },
+      margin: { top: 20 },
+      didDrawPage: (data: any) => {
+        doc.text('Events', data.settings.margin.left, 10);
+      }
+    });
+    doc.save('events.pdf');
+  }
+
   toggleForm() {
     this.showForm = !this.showForm;
     if (!this.showForm) {

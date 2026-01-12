@@ -180,6 +180,53 @@ $text-muted: #6c757d;
   }
 }
 
+.export-buttons {
+  display: flex;
+  gap: 8px;
+
+  button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &.export-csv {
+      background-color: #1976d2;
+
+      &:hover:not(:disabled) {
+        background-color: #1565c0;
+      }
+    }
+
+    &.export-pdf {
+      background-color: #388e3c;
+
+      &:hover:not(:disabled) {
+        background-color: #2e7d32;
+      }
+    }
+  }
+}
+
 // Table Styling
 .table-container {
   background: white;
