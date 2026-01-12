@@ -202,11 +202,10 @@ export class CreateEvent implements OnInit {
   onDelete(event: Event) {
     if (!confirm(`Are you sure you want to delete "${event.title}"?`)) return;
     
-    event.status = 'deleted';
-    const updatedEvent = { ...event };
-    this.eventService.updateEvent(event.eventId!, updatedEvent).subscribe(
+    this.eventService.deleteEvent(event.eventId!).subscribe(
       (response) => {
-        console.log('Event marked as deleted:', response);
+        console.log('Event deleted successfully:', response);
+        this.events = this.events.filter(e => e.eventId !== event.eventId);
         this.applyFiltersAndSort();
         this.cdr.markForCheck();
       },

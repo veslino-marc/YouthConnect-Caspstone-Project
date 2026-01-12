@@ -23,7 +23,7 @@ public class Event {
     @Column(name = "location", length = 255)
     private String location;
 
-    @Column(name = "status", columnDefinition = "ENUM('waiting','ongoing','completed','deleted')", nullable = false)
+    @Column(name = "status", columnDefinition = "ENUM('waiting','ongoing','completed')", nullable = false)
     private String status;
 
     @Column(name = "created_by_admin_id")

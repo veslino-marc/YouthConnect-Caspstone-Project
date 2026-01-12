@@ -76,21 +76,23 @@
                                 <span class="status-badge" 
                                     [class.status-waiting]="event.status === 'waiting'"
                                     [class.status-ongoing]="event.status === 'ongoing'" 
-                                    [class.status-completed]="event.status === 'completed'"
-                                    [class.status-deleted]="event.status === 'deleted'">
+                                    [class.status-completed]="event.status === 'completed'">
                                     {{ getStatusDisplay(event.status) }}
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
+                        <!-- Registration Open (Waiting Status) -->
                         <button 
-                            *ngIf="!isUserRegistered(event.eventId)"
+                            *ngIf="event.status === 'waiting' && !isUserRegistered(event.eventId)"
                             class="register-btn" 
                             (click)="openRegistrationModal(event)"
                         >
                             Register Now
                         </button>
+                        
+                        <!-- Already Registered -->
                         <button 
                             *ngIf="isUserRegistered(event.eventId)"
                             class="registered-btn"
@@ -98,6 +100,16 @@
                             title="You are already registered for this event"
                         >
                             ✓ Registered
+                        </button>
+                        
+                        <!-- Registration Closed (Ongoing or Completed) -->
+                        <button 
+                            *ngIf="event.status !== 'waiting' && !isUserRegistered(event.eventId)"
+                            class="registration-closed-btn"
+                            disabled
+                            title="Registration is closed for this event"
+                        >
+                            Registration Closed
                         </button>
                     </div>
                 </div>

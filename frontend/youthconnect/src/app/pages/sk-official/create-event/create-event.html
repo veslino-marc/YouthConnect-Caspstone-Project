@@ -223,8 +223,7 @@
                         <div class="status-badge" 
                             [class.status-waiting]="selectedEvent.status === 'waiting'"
                             [class.status-ongoing]="selectedEvent.status === 'ongoing'"
-                            [class.status-completed]="selectedEvent.status === 'completed'"
-                            [class.status-deleted]="selectedEvent.status === 'deleted'">
+                            [class.status-completed]="selectedEvent.status === 'completed'">
                             {{ selectedEvent.status | uppercase }}
                         </div>
                     </div>
