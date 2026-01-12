@@ -23,6 +23,9 @@ public class Event {
     @Column(name = "location", length = 255)
     private String location;
 
+    @Column(name = "status", columnDefinition = "ENUM('waiting','ongoing','completed','deleted')", nullable = false)
+    private String status;
+
     @Column(name = "created_by_admin_id")
     private Integer createdByAdminId;
 
@@ -35,6 +38,9 @@ public class Event {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (status == null || status.isEmpty()) {
+            status = "waiting";
+        }
     }
 
     @PreUpdate
@@ -81,6 +87,14 @@ public class Event {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Integer getCreatedByAdminId() {

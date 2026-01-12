@@ -42,6 +42,7 @@ export class EventService {
       description: eventData.description,
       eventDate: eventData.eventDate ? new Date(eventData.eventDate).toISOString() : null,
       location: eventData.location,
+      status: eventData.status,
       createdByAdminId: eventData.createdByAdminId
     };
     

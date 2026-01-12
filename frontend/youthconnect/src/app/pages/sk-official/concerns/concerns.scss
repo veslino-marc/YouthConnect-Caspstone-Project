@@ -369,9 +369,39 @@ $text-muted: #6c757d;
       padding: 12px 16px;
       border-top: 1px solid $border-color;
       background-color: $light-bg;
+      display: flex;
+      gap: 12px;
+
+      .resolve-btn {
+        flex: 1;
+        padding: 10px 16px;
+        background-color: $success-color;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: #218838;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+      }
 
       .delete-btn {
-        width: 100%;
+        flex: 1;
         padding: 10px 16px;
         background-color: $danger-color;
         color: white;
@@ -541,6 +571,184 @@ $text-muted: #6c757d;
 
       .status-badge {
         align-self: flex-start;
+      }
+    }
+  }
+}
+
+// Modal Styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+
+    &.detail-modal {
+      max-width: 700px;
+      width: 100%;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      border-bottom: 1px solid $border-color;
+      background-color: $light-bg;
+      border-radius: 8px 8px 0 0;
+
+      h2 {
+        margin: 0;
+        color: $text-dark;
+        font-size: 22px;
+        font-weight: 600;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: $text-muted;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+          color: $text-dark;
+        }
+      }
+    }
+
+    .modal-body {
+      padding: 32px;
+
+      .detail-section {
+        .status-section {
+          margin-bottom: 24px;
+
+          .status-badge {
+            &.large {
+              padding: 8px 16px;
+              font-size: 14px;
+              font-weight: 600;
+            }
+          }
+        }
+
+        .detail-row {
+          margin-bottom: 20px;
+
+          .detail-label {
+            display: block;
+            font-weight: 600;
+            color: $text-dark;
+            margin-bottom: 8px;
+            font-size: 14px;
+          }
+
+          .detail-text {
+            color: $text-muted;
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.6;
+
+            &.description-text {
+              background-color: $light-bg;
+              padding: 12px 16px;
+              border-radius: 6px;
+              border-left: 4px solid $primary-color;
+              white-space: pre-wrap;
+              word-break: break-word;
+            }
+          }
+        }
+      }
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid $border-color;
+      background-color: $light-bg;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      border-radius: 0 0 8px 8px;
+
+      .btn-close {
+        padding: 10px 24px;
+        background-color: $primary-color;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: #0041a3;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    .modal-content {
+      &.detail-modal {
+        max-width: 90vw;
+      }
+
+      .modal-header {
+        padding: 16px;
+
+        h2 {
+          font-size: 18px;
+        }
+      }
+
+      .modal-body {
+        padding: 16px;
       }
     }
   }

@@ -57,6 +57,9 @@ public class EventServiceImpl implements EventService {
             event.setDescription(eventDTO.getDescription());
             event.setEventDate(eventDTO.getEventDate());
             event.setLocation(eventDTO.getLocation());
+            if (eventDTO.getStatus() != null) {
+                event.setStatus(eventDTO.getStatus());
+            }
             return eventRepository.save(event);
         }
         return null;

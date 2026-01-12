@@ -24,6 +24,8 @@ export class CreateEvent implements OnInit {
   showForm = false;
   eventsLoading = false;
   editingEventId: number | null = null;
+  showEventModal = false;
+  selectedEvent: Event | null = null;
 
   // Search and sort state
   searchTerm = '';
@@ -200,10 +202,11 @@ export class CreateEvent implements OnInit {
   onDelete(event: Event) {
     if (!confirm(`Are you sure you want to delete "${event.title}"?`)) return;
     
-    this.eventService.deleteEvent(event.eventId!).subscribe(
+    event.status = 'deleted';
+    const updatedEvent = { ...event };
+    this.eventService.updateEvent(event.eventId!, updatedEvent).subscribe(
       (response) => {
-        console.log('Event deleted successfully:', response);
-        this.events = this.events.filter(e => e.eventId !== event.eventId);
+        console.log('Event marked as deleted:', response);
         this.applyFiltersAndSort();
         this.cdr.markForCheck();
       },
@@ -321,6 +324,20 @@ export class CreateEvent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  onStatusChange(event: Event, status: 'ongoing' | 'completed') {
+    event.status = status;
+    const updatedEvent = { ...event };
+    this.eventService.updateEvent(event.eventId!, updatedEvent).subscribe({
+      next: () => {
+        this.successMessage = `Event marked as ${status}`;
+        setTimeout(() => (this.successMessage = ''), 3000);
+      },
+      error: (err) => {
+        this.errorMessage = `Error updating event status: ${err.message}`;
+      },
+    });
+  }
+
   get title() {
     return this.eventForm.get('title');
   }
@@ -335,5 +352,17 @@ export class CreateEvent implements OnInit {
 
   get location() {
     return this.eventForm.get('location');
+  }
+
+  openEventModal(event: Event) {
+    this.selectedEvent = event;
+    this.showEventModal = true;
+    this.cdr.markForCheck();
+  }
+
+  closeEventModal() {
+    this.showEventModal = false;
+    this.selectedEvent = null;
+    this.cdr.markForCheck();
   }
 }

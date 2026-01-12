@@ -71,7 +71,7 @@
 
             <!-- Event Cards -->
             <div class="events-grid" *ngIf="filteredEvents.length > 0">
-                <div *ngFor="let event of filteredEvents" class="event-card">
+                <div *ngFor="let event of filteredEvents" class="event-card" (click)="openEventModal(event)">
                     <div class="card-header">
                         <h2 class="event-title">{{ event.title }}</h2>
                         <div class="event-date-badge">{{ event.eventDate | date:'MMM d' }}</div>
@@ -90,8 +90,28 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="edit-btn" (click)="onEdit(event)" title="Edit event">✎ Edit</button>
-                        <button class="delete-btn" (click)="onDelete(event)" title="Delete event">🗑 Delete</button>
+                        <div class="status-buttons">
+                            <button 
+                                [class.active]="event.status === 'ongoing'"
+                                class="status-btn ongoing-btn" 
+                                (click)="onStatusChange(event, 'ongoing'); $event.stopPropagation()"
+                                title="Mark as Ongoing"
+                            >
+                                🔄 Ongoing
+                            </button>
+                            <button 
+                                [class.active]="event.status === 'completed'"
+                                class="status-btn completed-btn" 
+                                (click)="onStatusChange(event, 'completed'); $event.stopPropagation()"
+                                title="Mark as Completed"
+                            >
+                                ✓ Completed
+                            </button>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="edit-btn" (click)="onEdit(event); $event.stopPropagation()" title="Edit event">✎ Edit</button>
+                            <button class="delete-btn" (click)="onDelete(event); $event.stopPropagation()" title="Delete event">🗑 Delete</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -188,6 +208,63 @@
                 </button>
             </div>
             </form>
+        </div>
+
+        <!-- Event Detail Modal -->
+        <div class="modal-overlay" *ngIf="showEventModal" (click)="closeEventModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h2>Event Details</h2>
+                    <button class="close-btn" (click)="closeEventModal()" title="Close modal">&times;</button>
+                </div>
+                <div class="modal-body" *ngIf="selectedEvent">
+                    <div class="detail-section">
+                        <h3>{{ selectedEvent.title }}</h3>
+                        <div class="status-badge" 
+                            [class.status-waiting]="selectedEvent.status === 'waiting'"
+                            [class.status-ongoing]="selectedEvent.status === 'ongoing'"
+                            [class.status-completed]="selectedEvent.status === 'completed'"
+                            [class.status-deleted]="selectedEvent.status === 'deleted'">
+                            {{ selectedEvent.status | uppercase }}
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <label>Description</label>
+                        <p class="description-text">{{ selectedEvent.description }}</p>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-section">
+                            <label>📍 Location</label>
+                            <p>{{ selectedEvent.location }}</p>
+                        </div>
+                        <div class="detail-section">
+                            <label>🕐 Date & Time</label>
+                            <p>{{ selectedEvent.eventDate | date:'full' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <label>👤 Created by Admin ID</label>
+                        <p>{{ selectedEvent.createdByAdminId }}</p>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-section">
+                            <label>📅 Created</label>
+                            <p>{{ selectedEvent.createdAt | date:'medium' }}</p>
+                        </div>
+                        <div class="detail-section">
+                            <label>✏️ Updated</label>
+                            <p>{{ selectedEvent.updatedAt | date:'medium' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" (click)="closeEventModal()">Close</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
