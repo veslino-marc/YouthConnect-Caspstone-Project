@@ -74,7 +74,21 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="register-btn">Register Now</button>
+                        <button 
+                            *ngIf="!isUserRegistered(event.eventId)"
+                            class="register-btn" 
+                            (click)="openRegistrationModal(event)"
+                        >
+                            Register Now
+                        </button>
+                        <button 
+                            *ngIf="isUserRegistered(event.eventId)"
+                            class="registered-btn"
+                            disabled
+                            title="You are already registered for this event"
+                        >
+                            ✓ Registered
+                        </button>
                     </div>
                 </div>
             </div>
@@ -142,6 +156,46 @@
         <!-- Empty State (No Events) -->
         <div *ngIf="!loading && events.length === 0" class="empty-state">
             No events available at this time.
+        </div>
+    </div>
+</div>
+
+<!-- Registration Modal -->
+<div class="modal-overlay" *ngIf="showRegistrationModal" (click)="closeRegistrationModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Register for Event</h2>
+            <button class="close-btn" (click)="closeRegistrationModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body" *ngIf="selectedEvent">
+            <!-- Event Details -->
+            <div class="event-summary">
+                <h3>{{ selectedEvent.title }}</h3>
+                <p class="event-date">📅 {{ selectedEvent.eventDate | date:'full' }}</p>
+                <p class="event-location">📍 {{ selectedEvent.location }}</p>
+                <p class="event-description">{{ selectedEvent.description }}</p>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="registration-form">
+                <p class="form-instruction">Please confirm your registration for this event.</p>
+                
+                <!-- Status Messages -->
+                <div *ngIf="registrationMessage" [class.success-message]="registrationMessageType === 'success'" [class.error-message]="registrationMessageType === 'error'" class="status-message">
+                    {{ registrationMessage }}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="modal-footer">
+                    <button class="cancel-btn" (click)="closeRegistrationModal()" [disabled]="isSubmitting">
+                        Cancel
+                    </button>
+                    <button class="confirm-btn" (click)="registerForEvent()" [disabled]="isSubmitting">
+                        {{ isSubmitting ? 'Registering...' : 'Confirm Registration' }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
