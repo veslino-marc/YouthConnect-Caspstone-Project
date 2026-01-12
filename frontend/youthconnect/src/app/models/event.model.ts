@@ -4,6 +4,7 @@ export interface Event {
   description: string;
   eventDate: string;
   location: string;
+  status?: 'ongoing' | 'completed';
   createdByAdminId?: number;
   createdAt?: string;
   updatedAt?: string;

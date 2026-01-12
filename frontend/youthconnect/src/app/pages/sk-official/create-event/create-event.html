@@ -90,8 +90,28 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="edit-btn" (click)="onEdit(event)" title="Edit event">✎ Edit</button>
-                        <button class="delete-btn" (click)="onDelete(event)" title="Delete event">🗑 Delete</button>
+                        <div class="status-buttons">
+                            <button 
+                                [class.active]="event.status === 'ongoing'"
+                                class="status-btn ongoing-btn" 
+                                (click)="onStatusChange(event, 'ongoing')"
+                                title="Mark as Ongoing"
+                            >
+                                🔄 Ongoing
+                            </button>
+                            <button 
+                                [class.active]="event.status === 'completed'"
+                                class="status-btn completed-btn" 
+                                (click)="onStatusChange(event, 'completed')"
+                                title="Mark as Completed"
+                            >
+                                ✓ Completed
+                            </button>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="edit-btn" (click)="onEdit(event)" title="Edit event">✎ Edit</button>
+                            <button class="delete-btn" (click)="onDelete(event)" title="Delete event">🗑 Delete</button>
+                        </div>
                     </div>
                 </div>
             </div>

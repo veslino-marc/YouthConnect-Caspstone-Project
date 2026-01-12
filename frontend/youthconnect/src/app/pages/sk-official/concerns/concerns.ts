@@ -34,6 +34,10 @@ export class Concerns implements OnInit {
   totalPages = 1;
   Math = Math; // Expose Math to template
 
+  // Modal state
+  showDetailModal = false;
+  selectedConcern: Concern | null = null;
+
   constructor(private concernService: ConcernService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
@@ -225,5 +229,17 @@ export class Concerns implements OnInit {
       }
     });
     doc.save('concerns.pdf');
+  }
+
+  openDetailModal(concern: Concern) {
+    this.selectedConcern = concern;
+    this.showDetailModal = true;
+    this.cdr.markForCheck();
+  }
+
+  closeDetailModal() {
+    this.showDetailModal = false;
+    this.selectedConcern = null;
+    this.cdr.markForCheck();
   }
 }

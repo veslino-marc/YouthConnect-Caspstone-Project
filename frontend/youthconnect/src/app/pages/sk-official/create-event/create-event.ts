@@ -321,6 +321,20 @@ export class CreateEvent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  onStatusChange(event: Event, status: 'ongoing' | 'completed') {
+    event.status = status;
+    const updatedEvent = { ...event };
+    this.eventService.updateEvent(event.eventId!, updatedEvent).subscribe({
+      next: () => {
+        this.successMessage = `Event marked as ${status}`;
+        setTimeout(() => (this.successMessage = ''), 3000);
+      },
+      error: (err) => {
+        this.errorMessage = `Error updating event status: ${err.message}`;
+      },
+    });
+  }
+
   get title() {
     return this.eventForm.get('title');
   }

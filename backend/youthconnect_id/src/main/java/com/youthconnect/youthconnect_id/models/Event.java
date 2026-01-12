@@ -23,6 +23,9 @@ public class Event {
     @Column(name = "location", length = 255)
     private String location;
 
+    @Column(name = "status", length = 50)
+    private String status;
+
     @Column(name = "created_by_admin_id")
     private Integer createdByAdminId;
 
@@ -81,6 +84,14 @@ public class Event {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Integer getCreatedByAdminId() {

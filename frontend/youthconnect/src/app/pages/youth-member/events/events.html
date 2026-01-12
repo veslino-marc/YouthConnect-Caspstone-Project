@@ -71,6 +71,12 @@
                                 <span class="detail-label">🕐 Time:</span>
                                 <span class="detail-value">{{ event.eventDate | date:'short' }}</span>
                             </div>
+                            <div class="detail-item" *ngIf="event.status">
+                                <span class="detail-label">Status:</span>
+                                <span class="status-badge" [class.status-ongoing]="event.status === 'ongoing'" [class.status-completed]="event.status === 'completed'">
+                                    {{ event.status === 'ongoing' ? '🔄 Ongoing' : '✓ Completed' }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">

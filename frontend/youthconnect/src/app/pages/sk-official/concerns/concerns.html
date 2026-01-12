@@ -81,7 +81,7 @@
                             {{ concern.status }}
                         </span>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" (click)="openDetailModal(concern)">
                         <p class="concern-description">{{ concern.description }}</p>
                         <div class="concern-details">
                             <div class="detail-item">
@@ -170,6 +170,63 @@
         <!-- No Data State -->
         <div *ngIf="!loading && concerns.length === 0" class="empty-state">
             <p>No concerns found. Youth members will be able to submit concerns here.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Concern Detail Modal -->
+<div class="modal-overlay" *ngIf="showDetailModal && selectedConcern" (click)="closeDetailModal()">
+    <div class="modal-content detail-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>{{ selectedConcern.title }}</h2>
+            <button class="close-btn" (click)="closeDetailModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="detail-section">
+                <div class="status-section">
+                    <span 
+                        class="status-badge large"
+                        [ngClass]="{
+                            'status-open': selectedConcern.status === 'Open',
+                            'status-closed': selectedConcern.status === 'Closed',
+                            'status-in-progress': selectedConcern.status === 'In Progress',
+                            'status-pending': selectedConcern.status === 'Pending'
+                        }"
+                    >
+                        {{ selectedConcern.status }}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <label class="detail-label">Type of Concern:</label>
+                    <p class="detail-text">{{ selectedConcern.typeOfConcern }}</p>
+                </div>
+
+                <div class="detail-row">
+                    <label class="detail-label">Description:</label>
+                    <p class="detail-text description-text">{{ selectedConcern.description }}</p>
+                </div>
+
+                <div class="detail-row">
+                    <label class="detail-label">Youth Member:</label>
+                    <p class="detail-text">{{ selectedConcern.youthId }}</p>
+                </div>
+
+                <div class="detail-row">
+                    <label class="detail-label">Created Date:</label>
+                    <p class="detail-text">{{ selectedConcern.createdAt | date:'medium' }}</p>
+                </div>
+
+                <div class="detail-row" *ngIf="selectedConcern.updatedAt">
+                    <label class="detail-label">Last Updated:</label>
+                    <p class="detail-text">{{ selectedConcern.updatedAt | date:'medium' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-close" (click)="closeDetailModal()">Close</button>
         </div>
     </div>
 </div>
