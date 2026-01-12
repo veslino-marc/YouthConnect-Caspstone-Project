@@ -20,6 +20,7 @@ export class Concerns implements OnInit {
   loading = true; // Show loading immediately
   errorMessage = '';
   deletingId: number | null = null;
+  resolvingId: number | null = null;
 
   // Search and sort state
   searchTerm = '';
@@ -241,5 +242,30 @@ export class Concerns implements OnInit {
     this.showDetailModal = false;
     this.selectedConcern = null;
     this.cdr.markForCheck();
+  }
+
+  onResolveConcern(concern: Concern) {
+    if (!concern.concernId) return;
+    if (concern.status === 'Resolved') return;
+
+    this.resolvingId = concern.concernId;
+    this.cdr.markForCheck();
+
+    this.concernService.updateConcernStatus(concern.concernId, 'Resolved').subscribe({
+      next: (updatedConcern) => {
+        const index = this.concerns.findIndex(c => c.concernId === concern.concernId);
+        if (index !== -1) {
+          this.concerns[index] = updatedConcern;
+        }
+        this.applyFilters();
+        this.resolvingId = null;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        alert('Failed to resolve concern.');
+        this.resolvingId = null;
+        this.cdr.markForCheck();
+      }
+    });
   }
 }

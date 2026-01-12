@@ -96,6 +96,14 @@
                     </div>
                     <div class="card-footer">
                         <button 
+                            class="resolve-btn"
+                            (click)="onResolveConcern(concern)"
+                            [disabled]="resolvingId === concern.concernId || concern.status === 'Resolved'"
+                            [title]="concern.status === 'Resolved' ? 'Already resolved' : resolvingId === concern.concernId ? 'Resolving...' : 'Mark as resolved'"
+                        >
+                            {{ concern.status === 'Resolved' ? '✓ Resolved' : resolvingId === concern.concernId ? '⏳ Resolving...' : '✓ Mark as Resolved' }}
+                        </button>
+                        <button 
                             class="delete-btn"
                             (click)="onDelete(concern)"
                             [disabled]="deletingId === concern.concernId"
