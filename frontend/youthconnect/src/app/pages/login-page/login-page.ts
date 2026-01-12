@@ -51,8 +51,10 @@ export class LoginPage {
           console.log('Login success:', response);
           this.isLoading = false;
           if (this.activeTab === 'youth') {
+            localStorage.setItem('user', JSON.stringify(response));
             this.router.navigate(['/youth-member/dashboard']);
           } else if (this.activeTab === 'sk') {
+            localStorage.setItem('admin', JSON.stringify(response));
             this.router.navigate(['/sk-official/dashboard']);
           }
         },
