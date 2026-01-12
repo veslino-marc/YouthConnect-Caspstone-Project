@@ -13,7 +13,7 @@
 
         <!-- Main Content -->
         <div *ngIf="!loading && concerns.length > 0">
-            <!-- Search, Filter & Export Toolbar -->
+            <!-- Search, Filter Toolbar -->
             <div class="toolbar">
                 <div class="search-input">
                     <input 
@@ -23,81 +23,88 @@
                         placeholder="Search concerns by title, type, or description..."
                     />
                 </div>
-                <div class="filters">
-                    <select [(ngModel)]="filterType" (ngModelChange)="onTypeFilterChange($event)">
+                <div class="filter-group">
+                    <select [(ngModel)]="filterType" (ngModelChange)="onTypeFilterChange($event)" class="filter-select">
                         <option value="">All Types</option>
                         <option *ngFor="let type of getTypeOptions()" [value]="type">{{ type }}</option>
                     </select>
-                </div>
-                <div class="filters">
-                    <select [(ngModel)]="filterStatus" (ngModelChange)="onStatusFilterChange($event)">
+                    <select [(ngModel)]="filterStatus" (ngModelChange)="onStatusFilterChange($event)" class="filter-select">
                         <option value="">All Status</option>
                         <option *ngFor="let status of getStatusOptions()" [value]="status">{{ status }}</option>
                     </select>
                 </div>
-                <div class="export-buttons">
-                    <button class="export-csv" (click)="exportToCSV()" title="Export filtered concerns to CSV">📥 CSV</button>
-                    <button class="export-pdf" (click)="exportToPDF()" title="Export filtered concerns to PDF">📄 PDF</button>
-                </div>
             </div>
 
-            <!-- Table -->
-            <div class="table-container" *ngIf="filteredConcerns.length > 0">
-                <table>
-                    <thead>
-                        <tr>
-                            <th (click)="onSort('title')" title="Click to sort">
-                                Title <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th (click)="onSort('typeOfConcern')" title="Click to sort">
-                                Type <span *ngIf="sortColumn === 'typeOfConcern'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th (click)="onSort('description')" title="Click to sort">
-                                Description <span *ngIf="sortColumn === 'description'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th (click)="onSort('status')" title="Click to sort">
-                                Status <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th (click)="onSort('createdAt')" title="Click to sort">
-                                Created <span *ngIf="sortColumn === 'createdAt'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                            </th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let concern of paginatedConcerns">
-                            <td title="{{ concern.title }}">{{ concern.title }}</td>
-                            <td title="{{ concern.typeOfConcern }}">{{ concern.typeOfConcern }}</td>
-                            <td title="{{ concern.description }}">{{ concern.description }}</td>
-                            <td>
-                                <span 
-                                    class="status-badge"
-                                    [ngClass]="{
-                                        'status-open': concern.status === 'Open',
-                                        'status-closed': concern.status === 'Closed',
-                                        'status-in-progress': concern.status === 'In Progress',
-                                        'status-pending': concern.status === 'Pending'
-                                    }"
-                                >
-                                    {{ concern.status }}
-                                </span>
-                            </td>
-                            <td title="{{ concern.createdAt | date:'medium' }}">{{ concern.createdAt | date:'short' }}</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button 
-                                        class="delete-btn"
-                                        (click)="onDelete(concern)"
-                                        [disabled]="deletingId === concern.concernId"
-                                        [title]="deletingId === concern.concernId ? 'Deleting...' : 'Delete this concern'"
-                                    >
-                                        {{ deletingId === concern.concernId ? '⏳' : '🗑️' }}
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Sort Options -->
+            <div class="sort-options" *ngIf="filteredConcerns.length > 0">
+                <span class="sort-label">Sort by:</span>
+                <button 
+                    (click)="onSort('title')" 
+                    [class.active]="sortColumn === 'title'"
+                    class="sort-btn"
+                    title="Sort by title"
+                >
+                    Title <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+                <button 
+                    (click)="onSort('status')" 
+                    [class.active]="sortColumn === 'status'"
+                    class="sort-btn"
+                    title="Sort by status"
+                >
+                    Status <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+                <button 
+                    (click)="onSort('createdAt')" 
+                    [class.active]="sortColumn === 'createdAt'"
+                    class="sort-btn"
+                    title="Sort by date"
+                >
+                    Created <span *ngIf="sortColumn === 'createdAt'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+            </div>
+
+            <!-- Concerns Cards Grid -->
+            <div class="concerns-grid" *ngIf="paginatedConcerns.length > 0">
+                <div *ngFor="let concern of paginatedConcerns" class="concern-card">
+                    <div class="card-header">
+                        <h2 class="concern-title">{{ concern.title }}</h2>
+                        <span 
+                            class="status-badge"
+                            [ngClass]="{
+                                'status-open': concern.status === 'Open',
+                                'status-closed': concern.status === 'Closed',
+                                'status-in-progress': concern.status === 'In Progress',
+                                'status-pending': concern.status === 'Pending'
+                            }"
+                        >
+                            {{ concern.status }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p class="concern-description">{{ concern.description }}</p>
+                        <div class="concern-details">
+                            <div class="detail-item">
+                                <span class="detail-label">📋 Type:</span>
+                                <span class="detail-value">{{ concern.typeOfConcern }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">📅 Created:</span>
+                                <span class="detail-value">{{ concern.createdAt | date:'short' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button 
+                            class="delete-btn"
+                            (click)="onDelete(concern)"
+                            [disabled]="deletingId === concern.concernId"
+                            [title]="deletingId === concern.concernId ? 'Deleting...' : 'Delete this concern'"
+                        >
+                            {{ deletingId === concern.concernId ? '⏳ Deleting...' : '🗑️ Delete' }}
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Pagination -->
