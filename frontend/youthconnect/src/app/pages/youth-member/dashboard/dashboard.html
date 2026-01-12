@@ -1,7 +1,85 @@
-<div style="display: flex;">
+<div class="dashboard-container">
     <app-youth-sidebar></app-youth-sidebar>
-    <div style="flex: 1; padding: 20px;">
-        <h1>Youth Member Dashboard</h1>
-        <p>dashboard works!</p>
+
+    <div class="dashboard-content">
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <div class="welcome-section">
+                <h1>Welcome, {{ userName }}!</h1>
+                <p class="email">{{ userEmail }}</p>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">{{ userInitials }}</div>
+                <div class="user-info">
+                    <span class="name">{{ fullName }}</span>
+                    <span class="role">Youth Member</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ myConcerns }}</span>
+                <span class="stat-label">My Concerns</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ upcomingEvents }}</span>
+                <span class="stat-label">Upcoming Events</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ eventsJoined }}</span>
+                <span class="stat-label">Events Joined</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ resolvedConcerns }}</span>
+                <span class="stat-label">Resolved Concerns</span>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Upcoming Events Section -->
+            <div class="events-section">
+                <h2 class="section-title">Upcoming Events</h2>
+                <div class="events-list">
+                    @for (event of events; track event.id) {
+                    <div class="event-card">
+                        <div class="event-date">{{ event.date }} - {{ event.time }}</div>
+                        <div class="event-name">{{ event.name }}</div>
+                        <div class="event-location">
+                            <span class="location-icon">📍</span>
+                            {{ event.location }}
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div class="notifications-section">
+                <h2 class="section-title-red">Notifications</h2>
+                <div class="notifications-list">
+                    @for (notification of notifications; track notification.id) {
+                    <div class="notification-item">
+                        <div class="notification-title">{{ notification.title }}</div>
+                        <div class="notification-message">{{ notification.message }}</div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn-action btn-concern" routerLink="/youth-member/create-concern">
+                <img src="assets/icons/concern.svg" alt="Concern" class="btn-icon">
+                Create Concern
+            </button>
+            <button class="btn-action btn-events" routerLink="/youth-member/events">
+                <img src="assets/icons/event.svg" alt="Events" class="btn-icon">
+                Browse Events
+            </button>
+        </div>
     </div>
 </div>
