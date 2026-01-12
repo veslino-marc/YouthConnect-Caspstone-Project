@@ -13,11 +13,14 @@ import { Router } from '@angular/router';
 })
 export class LoginPage {
   activeTab: 'sk' | 'youth' = 'youth';
+  loginError: string = '';
+  isLoading: boolean = false;
 
   constructor(private http: HttpClient, private router: Router) {}
 
   setTab(tab: 'sk' | 'youth') {
     this.activeTab = tab;
+    this.loginError = '';
   }
 
   onSubmit(event: Event) {
@@ -27,11 +30,26 @@ export class LoginPage {
     const email = data.get('email') as string | null;
     const password = data.get('password') as string | null;
 
-    this.http.post('http://localhost:8080/api/login', { 
+    if (!email || !password) {
+      this.loginError = 'Email and password are required';
+      return;
+    }
+
+    this.isLoading = true;
+    this.loginError = '';
+
+    const loginPayload = { 
       email, 
-      password 
-    }).subscribe({
+      password,
+      role: this.activeTab
+    };
+    console.log('Submitting login payload:', JSON.stringify(loginPayload));
+    console.log('Active tab:', this.activeTab);
+
+    this.http.post('http://localhost:8080/api/login', loginPayload).subscribe({
         next: (response) => {
+          console.log('Login success:', response);
+          this.isLoading = false;
           if (this.activeTab === 'youth') {
             this.router.navigate(['/youth-member/dashboard']);
           } else if (this.activeTab === 'sk') {
@@ -39,7 +57,15 @@ export class LoginPage {
           }
         },
         error: (err) => {
+          this.isLoading = false;
           console.error('Login failed:', err);
+          if (err.status === 401) {
+            this.loginError = 'Invalid email or password';
+          } else if (err.status === 400) {
+            this.loginError = 'Invalid request. Please check your input.';
+          } else {
+            this.loginError = 'Login failed. Please try again.';
+          }
         }
       });
   }

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class YouthConnectIdApplication {
 
 	public static void main(String[] args) {
- 		System.out.println("AHAHAHAHAHAHAa kumag");
+ 		System.out.println("Backend is running...");
  		SpringApplication.run(YouthConnectIdApplication.class, args);
 	}
 

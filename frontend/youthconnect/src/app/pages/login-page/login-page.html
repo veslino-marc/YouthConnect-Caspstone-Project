@@ -19,6 +19,10 @@
             </button>
         </div>
 
+        @if (loginError) {
+            <div class="error-message">{{ loginError }}</div>
+        }
+
         <form class="login-form" (submit)="onSubmit($event)">
             <input 
                 class="input" 

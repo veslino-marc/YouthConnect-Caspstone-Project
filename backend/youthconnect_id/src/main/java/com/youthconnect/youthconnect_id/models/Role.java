@@ -16,7 +16,6 @@ public class Role {
     @Column(name = "role_description")
     private String roleDescription;
 
-    // Getters and setters
     public Long getRoleId() {
         return roleId;
     }

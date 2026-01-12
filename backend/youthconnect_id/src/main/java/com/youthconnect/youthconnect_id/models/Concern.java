@@ -45,7 +45,6 @@ public class Concern {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
     public Integer getConcernId() {
         return concernId;
     }
