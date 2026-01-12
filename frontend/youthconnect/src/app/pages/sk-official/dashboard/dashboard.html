@@ -43,15 +43,18 @@
             <div class="events-section">
                 <h2 class="section-title">Upcoming Events</h2>
                 <div class="events-list">
-                    @for (event of events; track event.id) {
-                    <div class="event-card">
-                        <div class="event-date">{{ event.date }} - {{ event.time }}</div>
-                        <div class="event-name">{{ event.name }}</div>
+                    @for (event of events; track event.eventId) {
+                    <div class="event-card" (click)="openEventDetails(event)">
+                        <div class="event-date">{{ event.eventDate | date:'MMMM d, yyyy - h:mm a' }}</div>
+                        <div class="event-name">{{ event.title }}</div>
                         <div class="event-location">
                             <span class="location-icon">📍</span>
                             {{ event.location }}
                         </div>
                     </div>
+                    }
+                    @if (events.length === 0) {
+                    <div class="no-events">No upcoming events</div>
                     }
                 </div>
             </div>
@@ -86,3 +89,55 @@
         </div>
     </div>
 </div>
+
+<!-- Event Details Modal -->
+@if (showEventModal && selectedEvent) {
+<div class="modal-overlay" (click)="closeEventModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Event Details</h2>
+            <button class="close-btn" (click)="closeEventModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <h3 class="event-title">{{ selectedEvent.title }}</h3>
+            <span class="status-badge">WAITING</span>
+
+            <div class="detail-section">
+                <label>📝 DESCRIPTION</label>
+                <p>{{ selectedEvent.description }}</p>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-item">
+                    <label>📍 LOCATION</label>
+                    <p>{{ selectedEvent.location }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>🕐 DATE & TIME</label>
+                    <p>{{ selectedEvent.eventDate | date:'EEEE, MMMM d, yyyy' }} at<br>{{ selectedEvent.eventDate |
+                        date:'h:mm a' }}</p>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <label>👤 CREATED BY ADMIN ID</label>
+                <p>{{ selectedEvent.createdByAdminId }}</p>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-item">
+                    <label>📅 CREATED</label>
+                    <p>{{ selectedEvent.createdAt | date:'MMM d, yyyy, h:mm:ss a' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>✏️ UPDATED</label>
+                    <p>{{ selectedEvent.updatedAt | date:'MMM d, yyyy, h:mm:ss a' }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-close" (click)="closeEventModal()">Close</button>
+        </div>
+    </div>
+</div>
+}
