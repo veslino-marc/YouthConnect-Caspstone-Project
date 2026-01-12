@@ -1,0 +1,135 @@
+:root {
+  --blue: #0038a8;
+  --yellow: #ffcd05;
+  --white: #fff;
+  --gray: #eceaea;
+  --brand: #222;
+  --muted: #6b6b6b;
+  --red: #c62828;
+}
+
+.landing-wrapper {
+  min-height: 100vh;
+  background: var(--gray);
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 40px 12px 32px;
+  background: var(--white);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.logo {
+  height: 38px;
+  margin-right: 10px;
+}
+.brand {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--brand);
+  margin-right: auto;
+  margin-left: 8px;
+  letter-spacing: 0.5px;
+}
+.nav {
+  display: flex;
+  gap: 28px;
+}
+.nav-link {
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.08rem;
+  padding: 0 4px;
+  transition: color 0.2s;
+}
+.nav-link.login {
+  border-left: 2px solid #e0e0e0;
+  margin-left: 18px;
+  padding-left: 18px;
+}
+.nav-link:hover {
+  color: var(--blue);
+}
+
+.landing-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: linear-gradient(to bottom, var(--blue) 0 70%, var(--yellow) 70% 100%);
+  padding-bottom: 40px;
+}
+.hero {
+  margin-top: 48px;
+  text-align: center;
+  color: var(--white);
+  max-width: 700px;
+}
+.hero-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  line-height: 1.2;
+}
+.highlight {
+  color: var(--yellow);
+  font-weight: 800;
+}
+.hero-desc {
+  font-size: 1.1rem;
+  color: #e0e0e0;
+  margin-bottom: 32px;
+}
+.sk-logo {
+  width: 110px;
+  margin: 18px auto 18px auto;
+  display: block;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  padding: 8px;
+}
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 10px;
+}
+.btn {
+  border: none;
+  border-radius: 22px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-learn {
+  background: var(--yellow);
+  color: var(--brand);
+}
+.btn-learn:hover {
+  background: #ffe066;
+}
+.btn-join {
+  background: var(--red);
+  color: var(--white);
+}
+.btn-join:hover {
+  background: #b71c1c;
+}
+.landing-footer {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--brand);
+  background: var(--blue);
+  padding: 18px 0 12px 0;
+  margin-top: auto;
+  color: var(--white);
+}
