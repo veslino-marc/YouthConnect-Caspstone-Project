@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SideBar } from './side-bar';
+import { SkSidebar } from './sk-sidebar';
 
-describe('SideBar', () => {
-  let component: SideBar;
-  let fixture: ComponentFixture<SideBar>;
+describe('SkSidebar', () => {
+  let component: SkSidebar;
+  let fixture: ComponentFixture<SkSidebar>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SideBar]
+      imports: [SkSidebar]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SideBar);
+    fixture = TestBed.createComponent(SkSidebar);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
