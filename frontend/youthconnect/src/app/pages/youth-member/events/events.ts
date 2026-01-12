@@ -258,8 +258,6 @@ export class Events implements OnInit {
         return '🔄 Ongoing';
       case 'completed':
         return '✓ Completed';
-      case 'deleted':
-        return '🗑️ Deleted';
       default:
         return status || 'Unknown';
     }

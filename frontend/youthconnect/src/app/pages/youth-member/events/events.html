@@ -76,8 +76,7 @@
                                 <span class="status-badge" 
                                     [class.status-waiting]="event.status === 'waiting'"
                                     [class.status-ongoing]="event.status === 'ongoing'" 
-                                    [class.status-completed]="event.status === 'completed'"
-                                    [class.status-deleted]="event.status === 'deleted'">
+                                    [class.status-completed]="event.status === 'completed'">
                                     {{ getStatusDisplay(event.status) }}
                                 </span>
                             </div>
