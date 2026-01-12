@@ -18,10 +18,15 @@ export class ManageProfiling implements OnInit {
   isEditMode: boolean = false;
   currentProfile: YouthProfileDTO = this.initializeProfile();
   selectedYouthId?: number;
+  isLoading: boolean = false;
+  errorMessage: string = '';
   
-  constructor(private youthProfileService: YouthProfileService) {}
+  constructor(private youthProfileService: YouthProfileService) {
+    console.log('ManageProfiling component constructed');
+  }
   
   ngOnInit(): void {
+    console.log('ManageProfiling ngOnInit called');
     this.loadYouthProfiles();
   }
   
@@ -50,13 +55,34 @@ export class ManageProfiling implements OnInit {
   }
   
   loadYouthProfiles(): void {
+    console.log('Loading youth profiles...');
+    this.isLoading = true;
+    this.errorMessage = '';
+    
     this.youthProfileService.getAllYouthProfilesWithClassification().subscribe({
       next: (data) => {
-        this.youthProfiles = data;
+        console.log('Youth profiles loaded successfully:', data);
+        this.youthProfiles = data || [];
+        this.isLoading = false;
+        if (this.youthProfiles.length === 0) {
+          console.warn('No youth profiles found in database');
+        }
       },
       error: (error) => {
         console.error('Error loading youth profiles:', error);
-        alert('Failed to load youth profiles');
+        this.errorMessage = 'Failed to load youth profiles. Please check if the backend server is running.';
+        this.isLoading = false;
+        this.youthProfiles = [];
+        
+        // Show detailed error in console
+        if (error.status === 0) {
+          console.error('Backend server is not reachable. Make sure it is running on http://localhost:8080');
+        } else {
+          console.error('Error details:', error.message);
+        }
+      },
+      complete: () => {
+        console.log('Youth profiles loading complete');
       }
     });
   }
@@ -101,30 +127,35 @@ export class ManageProfiling implements OnInit {
   }
   
   saveProfile(): void {
+    console.log('Saving profile...', this.isEditMode ? 'Edit Mode' : 'Create Mode');
+    console.log('Profile data:', this.currentProfile);
+    
     if (this.isEditMode && this.selectedYouthId) {
       // Update existing profile
       this.youthProfileService.updateYouthProfileWithClassification(this.selectedYouthId, this.currentProfile).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('Youth profile updated successfully:', response);
           alert('Youth profile updated successfully');
-          this.loadYouthProfiles();
           this.closeModal();
+          this.loadYouthProfiles();
         },
         error: (error) => {
           console.error('Error updating youth profile:', error);
-          alert('Failed to update youth profile');
+          alert('Failed to update youth profile: ' + (error.message || 'Unknown error'));
         }
       });
     } else {
       // Create new profile
       this.youthProfileService.registerYouth(this.currentProfile as any).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('Youth profile created successfully:', response);
           alert('Youth profile created successfully');
-          this.loadYouthProfiles();
           this.closeModal();
+          this.loadYouthProfiles();
         },
         error: (error) => {
           console.error('Error creating youth profile:', error);
-          alert('Failed to create youth profile');
+          alert('Failed to create youth profile: ' + (error.message || 'Unknown error'));
         }
       });
     }

@@ -8,7 +8,18 @@
             </button>
         </div>
         
-        <div class="table-container">
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="error-banner">
+            <p>{{ errorMessage }}</p>
+            <button (click)="loadYouthProfiles()">Retry</button>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div *ngIf="isLoading" class="loading-container">
+            <p>Loading youth profiles...</p>
+        </div>
+        
+        <div class="table-container" *ngIf="!isLoading">
             <table class="youth-table">
                 <thead>
                     <tr>
