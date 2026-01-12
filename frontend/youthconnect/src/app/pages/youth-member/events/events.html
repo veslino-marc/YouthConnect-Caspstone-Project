@@ -1,7 +1,147 @@
-<div style="display: flex;">
+<div class="events-container">
     <app-youth-sidebar></app-youth-sidebar>
-    <div style="flex: 1; padding: 20px;">
-        <h1>Events</h1>
-        <p>events works!</p>
+    <div class="events-content">
+        <h1>Upcoming Events</h1>
+        <p class="page-subtitle">Discover and explore all events created by administrators</p>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-state">Loading events...</div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
+
+        <!-- Main Content -->
+        <div *ngIf="!loading && events.length > 0">
+            <!-- Search Toolbar -->
+            <div class="toolbar">
+                <div class="search-input">
+                    <input 
+                        type="text" 
+                        [(ngModel)]="searchTerm" 
+                        (input)="onSearchChange()" 
+                        placeholder="Search events by title, description, or location..."
+                    />
+                </div>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="sort-options" *ngIf="filteredEvents.length > 0">
+                <span class="sort-label">Sort by:</span>
+                <button 
+                    (click)="onSort('title')" 
+                    [class.active]="sortColumn === 'title'"
+                    class="sort-btn"
+                    title="Sort by title"
+                >
+                    Title <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+                <button 
+                    (click)="onSort('eventDate')" 
+                    [class.active]="sortColumn === 'eventDate'"
+                    class="sort-btn"
+                    title="Sort by date"
+                >
+                    Date <span *ngIf="sortColumn === 'eventDate'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+                <button 
+                    (click)="onSort('location')" 
+                    [class.active]="sortColumn === 'location'"
+                    class="sort-btn"
+                    title="Sort by location"
+                >
+                    Location <span *ngIf="sortColumn === 'location'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+            </div>
+
+            <!-- Event Cards -->
+            <div class="events-grid" *ngIf="filteredEvents.length > 0">
+                <div *ngFor="let event of paginatedEvents" class="event-card">
+                    <div class="card-header">
+                        <h2 class="event-title">{{ event.title }}</h2>
+                        <div class="event-date-badge">{{ event.eventDate | date:'MMM d' }}</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="event-description">{{ event.description }}</p>
+                        <div class="event-details">
+                            <div class="detail-item">
+                                <span class="detail-label">📍 Location:</span>
+                                <span class="detail-value">{{ event.location }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">🕐 Time:</span>
+                                <span class="detail-value">{{ event.eventDate | date:'short' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="register-btn">Register Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="filteredEvents.length === 0 && !loading" class="empty-state">
+                No events found matching your search.
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container" *ngIf="totalPages > 1">
+                <div class="pagination-info">
+                    Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, filteredEvents.length) }} of {{ filteredEvents.length }} events
+                </div>
+                <div class="pagination-controls">
+                    <button 
+                        class="pagination-btn" 
+                        (click)="onPageChange(currentPage - 1)" 
+                        [disabled]="currentPage === 1"
+                        title="Previous page"
+                    >
+                        ← Previous
+                    </button>
+                    <div class="page-buttons">
+                        <button 
+                            *ngIf="getPageNumbers()[0] > 1" 
+                            class="pagination-btn" 
+                            (click)="onPageChange(1)"
+                            title="Go to first page"
+                        >
+                            1
+                        </button>
+                        <span *ngIf="getPageNumbers()[0] > 2" class="ellipsis">...</span>
+                        <button 
+                            *ngFor="let page of getPageNumbers()"
+                            (click)="onPageChange(page)"
+                            [class.active]="currentPage === page"
+                            class="pagination-btn"
+                            [title]="'Go to page ' + page"
+                        >
+                            {{ page }}
+                        </button>
+                        <span *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages - 1" class="ellipsis">...</span>
+                        <button 
+                            *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages" 
+                            class="pagination-btn" 
+                            (click)="onPageChange(totalPages)"
+                            [title]="'Go to page ' + totalPages"
+                        >
+                            {{ totalPages }}
+                        </button>
+                    </div>
+                    <button 
+                        class="pagination-btn" 
+                        (click)="onPageChange(currentPage + 1)" 
+                        [disabled]="currentPage === totalPages"
+                        title="Next page"
+                    >
+                        Next →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State (No Events) -->
+        <div *ngIf="!loading && events.length === 0" class="empty-state">
+            No events available at this time.
+        </div>
     </div>
 </div>
