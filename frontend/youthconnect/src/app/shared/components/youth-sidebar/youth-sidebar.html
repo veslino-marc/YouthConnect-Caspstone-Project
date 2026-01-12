@@ -4,36 +4,44 @@
 	</div>
 	<ul class="sidebar-menu">
 		<li class="sidebar-item">
-			<span class="icon">
-				<img src="assets/icons/dashboard.svg" alt="Dashboard" />
-			</span>
-			<span class="label">Dashboard</span>
+			<a routerLink="/youth-member/dashboard" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/dashboard.svg" alt="Dashboard" />
+				</span>
+				<span class="label">Dashboard</span>
+			</a>
 		</li>
 		<li class="sidebar-item">
-			<span class="icon">
-				<img src="assets/icons/concern.svg" alt="Create Concern" />
-			</span>
-			<span class="label">Create Concern</span>
+			<a routerLink="/youth-member/create-concern" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/concern.svg" alt="Create Concern" />
+				</span>
+				<span class="label">Create Concern</span>
+			</a>
 		</li>
 		<li class="sidebar-item">
-			<span class="icon">
-				<img src="assets/icons/event.svg" alt="Events" />
-			</span>
-			<span class="label">Events</span>
+			<a routerLink="/youth-member/events" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/event.svg" alt="Events" />
+				</span>
+				<span class="label">Events</span>
+			</a>
 		</li>
 		<li class="sidebar-item">
-			<span class="icon">
-				<img src="assets/icons/notification.svg" alt="Notification" />
-			</span>
-			<span class="label">Notification</span>
+			<a routerLink="/youth-member/notifications" routerLinkActive="active">
+				<span class="icon">
+					<img src="/assets/icons/notification.svg" alt="Notification" />
+				</span>
+				<span class="label">Notification</span>
+			</a>
 		</li>
 	</ul>
 	<div class="sidebar-logout">
-		<button class="logout-btn">
+		<a class="logout-btn" routerLink="/login">
 			<span class="icon">
-				<img src="assets/icons/logout.svg" alt="Logout" />
+				<img src="/assets/icons/logout.svg" alt="Logout" />
 			</span>
 			<span class="label">Logout</span>
-		</button>
+		</a>
 	</div>
 </nav>
