@@ -19,11 +19,11 @@
             <p>Loading youth profiles...</p>
         </div>
         
-        <div class="table-container" *ngIf="!isLoading">
+        <!-- Table Container - Always show when not loading -->
+        <div class="table-container" *ngIf="!isLoading && !errorMessage">
             <table class="youth-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Full Name</th>
                         <th>Gender</th>
                         <th>Birthday</th>
@@ -41,7 +41,6 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let profile of youthProfiles">
-                        <td>{{ profile.youthId }}</td>
                         <td>{{ getFullName(profile) }}</td>
                         <td>{{ profile.gender }}</td>
                         <td>{{ profile.birthday }}</td>
@@ -66,7 +65,7 @@
                         </td>
                     </tr>
                     <tr *ngIf="youthProfiles.length === 0">
-                        <td colspan="14" style="text-align: center; padding: 20px;">
+                        <td colspan="13" style="text-align: center; padding: 20px;">
                             No youth profiles found
                         </td>
                     </tr>
