@@ -5,7 +5,7 @@ import { LandingPage } from './pages/landing-page/landing-page';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, LoginPage, LandingPage],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
