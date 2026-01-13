@@ -1,7 +1,221 @@
-<div style="display: flex;">
+<div class="tasks-container">
     <app-sk-sidebar></app-sk-sidebar>
-    <div style="flex: 1; padding: 20px;">
-        <h1>Task Tracker</h1>
-        <p>task-tracker works!</p>
+    <div class="tasks-content">
+        <div class="page-header">
+            <div>
+                <h1>Task Tracker</h1>
+                <p class="page-subtitle">Create and manage your tasks</p>
+            </div>
+            <button 
+                (click)="toggleForm()"
+                class="add-button"
+            >
+                {{ showForm ? '✕ Cancel' : '+ Add Task' }}
+            </button>
+        </div>
+
+        <!-- Tasks List -->
+        <div *ngIf="!showForm">
+            <!-- Loading State -->
+            <div *ngIf="tasksLoading" class="loading-state">Loading tasks...</div>
+
+            <!-- Empty State -->
+            <div *ngIf="!tasksLoading && tasks.length === 0" class="empty-state">
+                No tasks found. Click "Add Task" to create one.
+            </div>
+
+            <!-- Search and Filter Toolbar -->
+            <div *ngIf="!tasksLoading && tasks.length > 0" class="toolbar">
+                <div class="search-input">
+                    <input 
+                        type="text" 
+                        [(ngModel)]="searchTerm" 
+                        (input)="onSearchChange()" 
+                        placeholder="Search tasks by title or description..."
+                    />
+                </div>
+                <div class="filter-buttons">
+                    <select [(ngModel)]="statusFilter" (change)="onFilterChange()" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="Pending">⏳ Pending</option>
+                        <option value="In Progress">🔄 In Progress</option>
+                        <option value="Completed">✓ Completed</option>
+                    </select>
+                    <select [(ngModel)]="priorityFilter" (change)="onFilterChange()" class="filter-select">
+                        <option value="">All Priority</option>
+                        <option value="Low">📌 Low</option>
+                        <option value="Medium">🔶 Medium</option>
+                        <option value="High">🔴 High</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="sort-options" *ngIf="filteredTasks.length > 0">
+                <span class="sort-label">Sort by:</span>
+                <button 
+                    (click)="onSort('title')" 
+                    [class.active]="sortColumn === 'title'"
+                    class="sort-btn"
+                >
+                    Title <span *ngIf="sortColumn === 'title'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+                <button 
+                    (click)="onSort('priority')" 
+                    [class.active]="sortColumn === 'priority'"
+                    class="sort-btn"
+                >
+                    Priority <span *ngIf="sortColumn === 'priority'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+                <button 
+                    (click)="onSort('dueDate')" 
+                    [class.active]="sortColumn === 'dueDate'"
+                    class="sort-btn"
+                >
+                    Due Date <span *ngIf="sortColumn === 'dueDate'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                </button>
+            </div>
+
+            <!-- Task Cards -->
+            <div class="tasks-grid" *ngIf="filteredTasks.length > 0">
+                <div *ngFor="let task of filteredTasks" class="task-card">
+                    <div class="card-header">
+                        <h2 class="task-title">{{ task.taskTitle }}</h2>
+                        <span class="task-id">#{{ task.taskId }}</span>
+                    </div>
+                    <div class="card-body">
+                        <div *ngIf="task.taskDescription" class="task-description">
+                            <p>{{ task.taskDescription }}</p>
+                        </div>
+                        <div class="task-meta">
+                            <div class="meta-item">
+                                <span class="label">🎯 Priority:</span>
+                                <span class="value priority-badge" [ngClass]="'priority-' + task.taskPriority">
+                                    {{ getPriorityDisplay(task.taskPriority) }}
+                                </span>
+                            </div>
+                            <div class="meta-item" *ngIf="task.dueDate">
+                                <span class="label">📅 Due:</span>
+                                <span class="value">{{ task.dueDate | date:'MMM d, yyyy' }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">📊 Status:</span>
+                                <span class="value status-badge" [ngClass]="'status-' + task.status">
+                                    {{ getStatusDisplay(task.status) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="status-buttons">
+                            <button 
+                                *ngIf="task.status !== 'In Progress'"
+                                class="status-btn" 
+                                (click)="onStatusChange(task, 'In Progress')"
+                                title="Mark as In Progress"
+                            >
+                                🔄 In Progress
+                            </button>
+                            <button 
+                                *ngIf="task.status !== 'Completed'"
+                                class="status-btn" 
+                                (click)="onStatusChange(task, 'Completed')"
+                                title="Mark as Completed"
+                            >
+                                ✓ Completed
+                            </button>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="edit-btn" (click)="onEdit(task)" title="Edit task">✎ Edit</button>
+                            <button class="delete-btn" (click)="onDelete(task)" title="Delete task">🗑 Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Search Results -->
+            <div *ngIf="!tasksLoading && tasks.length > 0 && filteredTasks.length === 0" class="empty-state">
+                No tasks match your filters. Try adjusting your search criteria.
+            </div>
+        </div>
+
+        <!-- Create/Edit Task Form -->
+        <div *ngIf="showForm" class="form-section">
+            <h2>{{ editingTaskId ? 'Edit Task' : 'Create New Task' }}</h2>
+            
+            <!-- Success Message -->
+            <div *ngIf="successMessage" class="success-state">
+                {{ successMessage }}
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="error-state">
+                {{ errorMessage }}
+            </div>
+
+            <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <label for="taskTitle">Task Title *</label>
+                    <input 
+                        type="text" 
+                        id="taskTitle" 
+                        formControlName="taskTitle"
+                        placeholder="Enter task title"
+                    />
+                    <div *ngIf="submitted && taskForm.get('taskTitle')?.invalid" class="error-text">
+                        <span *ngIf="taskForm.get('taskTitle')?.errors?.['required']">Task title is required</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Task Description</label>
+                    <textarea 
+                        id="taskDescription" 
+                        formControlName="taskDescription"
+                        placeholder="Enter task description"
+                        rows="4"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskPriority">Priority *</label>
+                    <select id="taskPriority" formControlName="taskPriority">
+                        <option value="Low">📌 Low</option>
+                        <option value="Medium">🔶 Medium</option>
+                        <option value="High">🔴 High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dueDate">Due Date *</label>
+                    <input 
+                        type="datetime-local" 
+                        id="dueDate" 
+                        formControlName="dueDate"
+                    />
+                    <div *ngIf="submitted && taskForm.get('dueDate')?.invalid" class="error-text">
+                        <span *ngIf="taskForm.get('dueDate')?.errors?.['required']">Due date is required</span>
+                    </div>
+                </div>
+
+                <div class="form-buttons">
+                    <button 
+                        type="submit" 
+                        [disabled]="loading"
+                        class="btn-primary"
+                    >
+                        {{ loading ? (editingTaskId ? 'Updating...' : 'Creating...') : (editingTaskId ? 'Update Task' : 'Create Task') }}
+                    </button>
+                    <button 
+                        type="button" 
+                        (click)="toggleForm()"
+                        [disabled]="loading"
+                        class="btn-secondary"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
