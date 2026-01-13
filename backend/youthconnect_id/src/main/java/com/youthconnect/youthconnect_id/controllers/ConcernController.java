@@ -1,14 +1,17 @@
 package com.youthconnect.youthconnect_id.controllers;
 
 import com.youthconnect.youthconnect_id.models.Concern;
+import com.youthconnect.youthconnect_id.models.ConcernUpdate;
 import com.youthconnect.youthconnect_id.models.dto.ConcernDTO;
 import com.youthconnect.youthconnect_id.services.ConcernService;
+import com.youthconnect.youthconnect_id.repositories.ConcernUpdateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -17,6 +20,9 @@ public class ConcernController {
 
     @Autowired
     private ConcernService concernService;
+
+    @Autowired
+    private ConcernUpdateRepository concernUpdateRepository;
 
     @PostMapping
     public ResponseEntity<Concern> createConcern(@RequestBody ConcernDTO concernDTO) {
@@ -78,5 +84,39 @@ public class ConcernController {
     public ResponseEntity<Void> deleteConcern(@PathVariable Integer id) {
         concernService.deleteConcern(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/{concernId}/updates")
+    public ResponseEntity<ConcernUpdate> saveConcernUpdate(@PathVariable Integer concernId, @RequestBody Map<String, Object> request) {
+        try {
+            String updateText = (String) request.get("updateText");
+            Integer updatedByAdminId = null;
+            
+            Object adminIdObj = request.get("updatedByAdminId");
+            if (adminIdObj != null) {
+                if (adminIdObj instanceof Integer) {
+                    updatedByAdminId = (Integer) adminIdObj;
+                } else if (adminIdObj instanceof Number) {
+                    updatedByAdminId = ((Number) adminIdObj).intValue();
+                }
+            }
+            
+            if (updateText == null || updateText.trim().isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            ConcernUpdate concernUpdate = new ConcernUpdate();
+            concernUpdate.setConcernId(concernId);
+            concernUpdate.setUpdateText(updateText);
+            if (updatedByAdminId != null) {
+                concernUpdate.setUpdatedByAdminId(updatedByAdminId);
+            }
+            
+            ConcernUpdate savedUpdate = concernUpdateRepository.save(concernUpdate);
+            return new ResponseEntity<>(savedUpdate, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

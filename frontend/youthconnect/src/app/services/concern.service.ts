@@ -35,6 +35,11 @@ export class ConcernService {
         return this.http.put<Concern>(`${this.apiUrl}/${id}/status`, status);
     }
 
+    saveConcernUpdate(concernId: number, updateText: string, updatedByAdminId: number): Observable<any> {
+        const payload = { concernId, updateText, updatedByAdminId };
+        return this.http.post(`${this.apiUrl}/${concernId}/updates`, payload);
+    }
+
     deleteConcern(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
