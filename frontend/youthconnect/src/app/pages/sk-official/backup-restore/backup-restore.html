@@ -1,0 +1,145 @@
+<div class="backup-container">
+    <app-sk-sidebar></app-sk-sidebar>
+
+    <div class="backup-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-info">
+                <h1>Backup & Restore</h1>
+                <p class="subtitle">Manage your database backups and restore data when needed</p>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        @if (successMessage) {
+        <div class="alert alert-success">
+            <span class="alert-icon">✓</span>
+            {{ successMessage }}
+        </div>
+        }
+        @if (errorMessage) {
+        <div class="alert alert-error">
+            <span class="alert-icon">✕</span>
+            {{ errorMessage }}
+        </div>
+        }
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Backup Section -->
+            <div class="card backup-card">
+                <div class="card-header">
+                    <div class="card-icon backup-icon">💾</div>
+                    <h2>Create Backup</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Create a complete backup of your database. The backup file will be downloaded automatically.
+                    </p>
+                    <ul class="info-list">
+                        <li>📁 Includes all youth profiles</li>
+                        <li>📅 Includes all events data</li>
+                        <li>📋 Includes all concerns</li>
+                        <li>👥 Includes user accounts</li>
+                    </ul>
+                    <button class="btn btn-primary btn-backup" (click)="createBackup()" [disabled]="isBackingUp">
+                        @if (isBackingUp) {
+                        <span class="spinner"></span>
+                        Creating Backup...
+                        } @else {
+                        <span class="btn-icon">📥</span>
+                        Create & Download Backup
+                        }
+                    </button>
+                </div>
+            </div>
+
+            <!-- Restore Section -->
+            <div class="card restore-card">
+                <div class="card-header">
+                    <div class="card-icon restore-icon">🔄</div>
+                    <h2>Restore Database</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Restore your database from a previous backup file. This will replace all current data.
+                    </p>
+                    <div class="warning-box">
+                        <span class="warning-icon">⚠️</span>
+                        <span>Warning: Restoring will overwrite all existing data. Make sure to create a backup
+                            first.</span>
+                    </div>
+                    <div class="file-upload-area">
+                        <input type="file" id="backupFile" accept=".sql,.backup" (change)="onFileSelected($event)"
+                            class="file-input">
+                        <label for="backupFile" class="file-label">
+                            <span class="upload-icon">📤</span>
+                            @if (selectedFile) {
+                            <span class="file-name">{{ selectedFile.name }}</span>
+                            } @else {
+                            <span>Choose backup file (.sql)</span>
+                            }
+                        </label>
+                    </div>
+                    <button class="btn btn-warning btn-restore" (click)="restoreBackup()"
+                        [disabled]="isRestoring || !selectedFile">
+                        @if (isRestoring) {
+                        <span class="spinner"></span>
+                        Restoring...
+                        } @else {
+                        <span class="btn-icon">🔄</span>
+                        Restore Database
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup History Section -->
+        <div class="card history-card">
+            <div class="card-header">
+                <div class="card-icon history-icon">📜</div>
+                <h2>Backup History</h2>
+                <button class="btn btn-secondary btn-refresh" (click)="loadBackups()">
+                    🔄 Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                @if (isLoading) {
+                <div class="loading-state">
+                    <span class="spinner large"></span>
+                    <p>Loading backups...</p>
+                </div>
+                } @else if (backups.length === 0) {
+                <div class="empty-state">
+                    <span class="empty-icon">📭</span>
+                    <p>No backups found</p>
+                    <span class="empty-hint">Create your first backup to see it here</span>
+                </div>
+                } @else {
+                <div class="backup-list">
+                    @for (backup of backups; track backup.filename) {
+                    <div class="backup-item">
+                        <div class="backup-info">
+                            <span class="backup-name">📄 {{ backup.filename }}</span>
+                            <div class="backup-meta">
+                                <span class="backup-date">📅 {{ backup.createdAt }}</span>
+                                <span class="backup-size">💾 {{ backup.size }}</span>
+                            </div>
+                        </div>
+                        <div class="backup-actions">
+                            <button class="btn btn-sm btn-download" (click)="downloadBackup(backup)">
+                                📥 Download
+                            </button>
+                            <button class="btn btn-sm btn-delete" (click)="deleteBackup(backup)">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
