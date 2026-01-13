@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { SkSidebar } from '../../../shared/components/sk-sidebar/sk-sidebar';
 import { YouthProfileService } from '../../../services/youth-profile.service';
 import { YouthProfileWithClassification, YouthProfileDTO, YouthClassification } from '../../../models/youth-profile.model';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-manage-profiling',
@@ -12,7 +15,7 @@ import { YouthProfileWithClassification, YouthProfileDTO, YouthClassification } 
   templateUrl: './manage-profiling.html',
   styleUrl: './manage-profiling.scss',
 })
-export class ManageProfiling implements OnInit {
+export class ManageProfiling implements OnInit, OnDestroy {
   youthProfiles: YouthProfileWithClassification[] = [];
   showModal: boolean = false;
   isEditMode: boolean = false;
@@ -20,6 +23,15 @@ export class ManageProfiling implements OnInit {
   selectedYouthId?: number;
   isLoading: boolean = false;
   errorMessage: string = '';
+  showExportDialog: boolean = false;
+  
+  searchTerm: string = '';
+  filterGender: string = '';
+  filterCivilStatus: string = '';
+  filterClassification: string = '';
+  filterWorkStatus: string = '';
+  filterSkVoter: string = '';
+  filterNationalVoter: string = '';
   
   constructor(
     private youthProfileService: YouthProfileService,
@@ -31,6 +43,24 @@ export class ManageProfiling implements OnInit {
   ngOnInit(): void {
     console.log('ManageProfiling ngOnInit called');
     this.loadYouthProfiles();
+    
+    // Listen for clicks outside the export popover
+    document.addEventListener('click', this.handleOutsideClick);
+  }
+  
+  ngOnDestroy(): void {
+    // Clean up the event listener
+    document.removeEventListener('click', this.handleOutsideClick);
+  }
+  
+  handleOutsideClick = (event: MouseEvent) => {
+    const popover = document.querySelector('.export-dialog-popover');
+    const exportBtn = document.querySelector('.btn-export');
+    if (this.showExportDialog && popover && exportBtn) {
+      if (!popover.contains(event.target as Node) && !exportBtn.contains(event.target as Node)) {
+        this.closeExportDialog();
+      }
+    }
   }
   
   initializeProfile(): YouthProfileDTO {
@@ -68,7 +98,6 @@ export class ManageProfiling implements OnInit {
         this.youthProfiles = data || [];
         this.isLoading = false;
         
-        // Manually trigger change detection
         this.cdr.detectChanges();
         
         if (this.youthProfiles.length === 0) {
@@ -83,10 +112,8 @@ export class ManageProfiling implements OnInit {
         this.isLoading = false;
         this.youthProfiles = [];
         
-        // Manually trigger change detection
         this.cdr.detectChanges();
         
-        // Show detailed error in console
         if (error.status === 0) {
           console.error('Backend server is not reachable. Make sure it is running on http://localhost:8080');
         } else {
@@ -143,7 +170,6 @@ export class ManageProfiling implements OnInit {
     console.log('Profile data:', this.currentProfile);
     
     if (this.isEditMode && this.selectedYouthId) {
-      // Update existing profile
       this.youthProfileService.updateYouthProfileWithClassification(this.selectedYouthId, this.currentProfile).subscribe({
         next: (response) => {
           console.log('Youth profile updated successfully:', response);
@@ -157,7 +183,6 @@ export class ManageProfiling implements OnInit {
         }
       });
     } else {
-      // Create new profile
       this.youthProfileService.registerYouth(this.currentProfile as any).subscribe({
         next: (response) => {
           console.log('Youth profile created successfully:', response);
@@ -198,5 +223,121 @@ export class ManageProfiling implements OnInit {
       profile.suffix
     ].filter(Boolean);
     return parts.join(' ');
+  }
+  
+  get filteredProfiles(): YouthProfileWithClassification[] {
+    return this.youthProfiles.filter(profile => {
+      const searchLower = this.searchTerm.toLowerCase();
+      const matchesSearch = !this.searchTerm || 
+        this.getFullName(profile).toLowerCase().includes(searchLower) ||
+        profile.contactNumber.toLowerCase().includes(searchLower) ||
+        profile.completeAddress.toLowerCase().includes(searchLower) ||
+        (profile.youthClassification?.toLowerCase() || '').includes(searchLower) ||
+        (profile.educationBackground?.toLowerCase() || '').includes(searchLower);
+      
+      const matchesGender = !this.filterGender || profile.gender === this.filterGender;
+      
+      const matchesCivilStatus = !this.filterCivilStatus || profile.civilStatus === this.filterCivilStatus;
+      
+      const matchesClassification = !this.filterClassification || profile.youthClassification === this.filterClassification;
+      
+      const matchesWorkStatus = !this.filterWorkStatus || profile.workStatus === this.filterWorkStatus;
+      
+      const matchesSkVoter = !this.filterSkVoter || 
+        (this.filterSkVoter === 'yes' && profile.skVoter) ||
+        (this.filterSkVoter === 'no' && !profile.skVoter);
+      
+      const matchesNationalVoter = !this.filterNationalVoter || 
+        (this.filterNationalVoter === 'yes' && profile.nationalVoter) ||
+        (this.filterNationalVoter === 'no' && !profile.nationalVoter);
+      
+      return matchesSearch && matchesGender && matchesCivilStatus && 
+             matchesClassification && matchesWorkStatus && matchesSkVoter && matchesNationalVoter;
+    });
+  }
+  
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.filterGender = '';
+    this.filterCivilStatus = '';
+    this.filterClassification = '';
+    this.filterWorkStatus = '';
+    this.filterSkVoter = '';
+    this.filterNationalVoter = '';
+  }
+  
+  exportToPDF(): void {
+    const profiles = this.filteredProfiles;
+    if (profiles.length === 0) {
+      alert('No data to export');
+      return;
+    }
+    const doc = new jsPDF();
+    const headers = [
+      'Full Name', 'Gender', 'Birthday', 'Contact Number', 'Address',
+      'Civil Status', 'Classification', 'Education', 'Work Status',
+      'SK Voter', 'National Voter', 'Assemblies Attended'
+    ];
+    const rows = profiles.map(profile => [
+      this.getFullName(profile),
+      profile.gender,
+      profile.birthday,
+      profile.contactNumber,
+      profile.completeAddress,
+      profile.civilStatus,
+      profile.youthClassification || 'N/A',
+      profile.educationBackground || 'N/A',
+      profile.workStatus || 'N/A',
+      profile.skVoter ? 'Yes' : 'No',
+      profile.nationalVoter ? 'Yes' : 'No',
+      profile.numAttendedAssemblies || '0'
+    ]);
+    autoTable(doc, {
+      head: [headers],
+      body: rows,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [33, 150, 243] },
+      margin: { top: 20 }
+    });
+    doc.save(`youth_profiles_${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  exportToExcel(): void {
+    const profiles = this.filteredProfiles;
+    if (profiles.length === 0) {
+      alert('No data to export');
+      return;
+    }
+    const headers = [
+      'Full Name', 'Gender', 'Birthday', 'Contact Number', 'Address',
+      'Civil Status', 'Classification', 'Education', 'Work Status',
+      'SK Voter', 'National Voter', 'Assemblies Attended'
+    ];
+    const rows = profiles.map(profile => [
+      this.getFullName(profile),
+      profile.gender,
+      profile.birthday,
+      profile.contactNumber,
+      profile.completeAddress,
+      profile.civilStatus,
+      profile.youthClassification || 'N/A',
+      profile.educationBackground || 'N/A',
+      profile.workStatus || 'N/A',
+      profile.skVoter ? 'Yes' : 'No',
+      profile.nationalVoter ? 'Yes' : 'No',
+      profile.numAttendedAssemblies || '0'
+    ]);
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Youth Profiles');
+    XLSX.writeFile(workbook, `youth_profiles_${new Date().toISOString().split('T')[0]}.xlsx`);
+  }
+
+  openExportDialog(): void {
+    this.showExportDialog = true;
+  }
+
+  closeExportDialog(): void {
+    this.showExportDialog = false;
   }
 }

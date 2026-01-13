@@ -3,23 +3,89 @@
     <div class="manage-profiling-container">
         <div class="header">
             <h1>Manage Youth Profiling</h1>
-            <button class="btn-add" (click)="openAddModal()">
-                + Add New Youth
-            </button>
+            <div class="header-actions" style="position: relative;">
+                <button class="btn-add" (click)="openAddModal()">
+                    + Add New Youth
+                </button>
+            </div>
         </div>
         
-        <!-- Error Message -->
+        <div class="search-filter-section" *ngIf="!isLoading && !errorMessage">
+            <div class="search-bar-row" style="display: flex; align-items: center; gap: 12px;">
+                <div class="search-box" style="flex: 1;">
+                    <input 
+                        type="text" 
+                        [(ngModel)]="searchTerm" 
+                        placeholder="Search by name, contact, address, classification..."
+                        class="search-input"
+                    />
+                </div>
+                <button class="btn-export" (click)="exportToPDF()">Export PDF</button>
+                <button class="btn-export" (click)="exportToExcel()">Export Excel</button>
+            </div>
+            <div class="filter-controls">
+                <select [(ngModel)]="filterGender" class="filter-select">
+                    <option value="">All Genders</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                
+                <select [(ngModel)]="filterCivilStatus" class="filter-select">
+                    <option value="">All Civil Status</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Widowed">Widowed</option>
+                    <option value="Separated">Separated</option>
+                </select>
+                
+                <select [(ngModel)]="filterClassification" class="filter-select">
+                    <option value="">All Classifications</option>
+                    <option value="In School Youth">In School Youth</option>
+                    <option value="Out of School Youth">Out of School Youth</option>
+                    <option value="Working Youth">Working Youth</option>
+                    <option value="Youth with Disability">Youth with Disability</option>
+                    <option value="Children in Conflict with Law">Children in Conflict with Law</option>
+                </select>
+                
+                <select [(ngModel)]="filterWorkStatus" class="filter-select">
+                    <option value="">All Work Status</option>
+                    <option value="Employed">Employed</option>
+                    <option value="Unemployed">Unemployed</option>
+                    <option value="Self-Employed">Self-Employed</option>
+                    <option value="Student">Student</option>
+                </select>
+                
+                <select [(ngModel)]="filterSkVoter" class="filter-select">
+                    <option value="">SK Voter - All</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+                
+                <select [(ngModel)]="filterNationalVoter" class="filter-select">
+                    <option value="">National Voter - All</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+                
+                <button class="btn-clear-filters" (click)="clearFilters()">
+                    ✖ Clear Filters
+                </button>
+            </div>
+            
+            <div class="results-summary">
+                Showing {{ filteredProfiles.length }} of {{ youthProfiles.length }} profiles
+            </div>
+        </div>
+        
         <div *ngIf="errorMessage" class="error-banner">
             <p>{{ errorMessage }}</p>
             <button (click)="loadYouthProfiles()">Retry</button>
         </div>
         
-        <!-- Loading Indicator -->
         <div *ngIf="isLoading" class="loading-container">
             <p>Loading youth profiles...</p>
         </div>
         
-        <!-- Table Container - Always show when not loading -->
         <div class="table-container" *ngIf="!isLoading && !errorMessage">
             <table class="youth-table">
                 <thead>
@@ -40,7 +106,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let profile of youthProfiles">
+                    <tr *ngFor="let profile of filteredProfiles">
                         <td>{{ getFullName(profile) }}</td>
                         <td>{{ profile.gender }}</td>
                         <td>{{ profile.birthday }}</td>
@@ -62,6 +128,11 @@
                                     (click)="deleteProfile(profile.youthId)">
                                 Delete
                             </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="filteredProfiles.length === 0 && youthProfiles.length > 0">
+                        <td colspan="13" style="text-align: center; padding: 20px;">
+                            No profiles match your filters
                         </td>
                     </tr>
                     <tr *ngIf="youthProfiles.length === 0">
