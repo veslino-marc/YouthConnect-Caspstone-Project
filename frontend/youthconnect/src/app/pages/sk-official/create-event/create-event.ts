@@ -3,7 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SkSidebar } from '../../../shared/components/sk-sidebar/sk-sidebar';
 import { EventService } from '../../../services/event.service';
+import { EventAttendanceService } from '../../../services/event-attendance.service';
+import { YouthProfileService } from '../../../services/youth-profile.service';
 import { Event } from '../../../models/event.model';
+import { EventAttendance } from '../../../models/event-attendance.model';
+import { YouthProfile } from '../../../models/youth-profile.model';
 
 @Component({
   selector: 'app-create-event',
@@ -26,13 +30,22 @@ export class CreateEvent implements OnInit {
   editingEventId: number | null = null;
   showEventModal = false;
   selectedEvent: Event | null = null;
+  showAttendeeModal = false;
+  selectedEventAttendees: (EventAttendance & { youthName?: string })[] = [];
+  attendeesLoading = false;
 
   // Search and sort state
   searchTerm = '';
   sortColumn: keyof Event | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  constructor(private formBuilder: FormBuilder, private eventService: EventService, private cdr: ChangeDetectorRef) {
+  constructor(
+    private formBuilder: FormBuilder, 
+    private eventService: EventService,
+    private eventAttendanceService: EventAttendanceService,
+    private youthProfileService: YouthProfileService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.eventForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', Validators.required],
@@ -362,6 +375,49 @@ export class CreateEvent implements OnInit {
   closeEventModal() {
     this.showEventModal = false;
     this.selectedEvent = null;
+    this.cdr.markForCheck();
+  }
+
+  openAttendeesModal(event: Event) {
+    this.attendeesLoading = true;
+    this.selectedEventAttendees = [];
+    this.showAttendeeModal = true;
+    this.cdr.markForCheck();
+
+    this.eventAttendanceService.getEventAttendance(event.eventId!).subscribe(
+      (attendances: EventAttendance[]) => {
+        // Get all youth profiles to map user IDs to names
+        this.youthProfileService.getAllYouthProfiles().subscribe(
+          (youthProfiles: YouthProfile[]) => {
+            // Map attendances with youth names
+            this.selectedEventAttendees = attendances.map((att) => {
+              const youth = youthProfiles.find(y => y.youthId === att.userId);
+              return {
+                ...att,
+                youthName: youth ? youth.firstName + ' ' + youth.lastName : 'Unknown User'
+              };
+            });
+            this.attendeesLoading = false;
+            this.cdr.markForCheck();
+          },
+          (error) => {
+            console.error('Error fetching youth profiles:', error);
+            this.attendeesLoading = false;
+            this.cdr.markForCheck();
+          }
+        );
+      },
+      (error) => {
+        console.error('Error fetching event attendance:', error);
+        this.attendeesLoading = false;
+        this.cdr.markForCheck();
+      }
+    );
+  }
+
+  closeAttendeesModal() {
+    this.showAttendeeModal = false;
+    this.selectedEventAttendees = [];
     this.cdr.markForCheck();
   }
 }

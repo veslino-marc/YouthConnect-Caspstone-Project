@@ -87,6 +87,13 @@
                                 <span class="detail-label">🕐 Time:</span>
                                 <span class="detail-value">{{ event.eventDate | date:'short' }}</span>
                             </div>
+                            <button 
+                                class="attendees-btn" 
+                                (click)="openAttendeesModal(event); $event.stopPropagation()"
+                                title="View event attendees"
+                            >
+                                👥 Attendees
+                            </button>
                         </div>
                     </div>
                     <div class="card-footer">
@@ -208,6 +215,40 @@
                 </button>
             </div>
             </form>
+        </div>
+
+        <!-- Attendees Modal -->
+        <div class="modal-overlay" *ngIf="showAttendeeModal" (click)="closeAttendeesModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h2>Event Attendees</h2>
+                    <button class="close-btn" (click)="closeAttendeesModal()" title="Close modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div *ngIf="attendeesLoading" class="loading-state">Loading attendees...</div>
+                    <div *ngIf="!attendeesLoading && selectedEventAttendees.length === 0" class="empty-state">
+                        <p>No attendees registered for this event yet.</p>
+                    </div>
+                    <div *ngIf="!attendeesLoading && selectedEventAttendees.length > 0" class="attendees-list">
+                        <div class="attendees-count">
+                            <strong>Total Attendees: {{ selectedEventAttendees.length }}</strong>
+                        </div>
+                        <div class="attendee-item" *ngFor="let attendee of selectedEventAttendees">
+                            <div class="attendee-info">
+                                <p class="attendee-name">{{ attendee.youthName }}</p>
+                                <p class="attendee-id">User ID: {{ attendee.userId }}</p>
+                            </div>
+                            <div class="attendee-status">
+                                <span *ngIf="attendee.isAttended" class="attended-badge">✓ Attended</span>
+                                <span *ngIf="!attendee.isAttended" class="registered-badge">• Registered</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" (click)="closeAttendeesModal()">Close</button>
+                </div>
+            </div>
         </div>
 
         <!-- Event Detail Modal -->
