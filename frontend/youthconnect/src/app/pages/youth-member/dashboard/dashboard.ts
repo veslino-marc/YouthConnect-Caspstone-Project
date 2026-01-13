@@ -5,13 +5,9 @@ import { EventService } from '../../../services/event.service';
 import { EventAttendanceService } from '../../../services/event-attendance.service';
 import { ConcernService } from '../../../services/concern.service';
 import type { Event } from '../../../models/event.model';
+import type { ConcernUpdate } from '../../../models/concern.model';
+import type { Notification } from '../../../models/notification.model';
 import { DatePipe, CommonModule } from '@angular/common';
-
-interface Notification {
-  id: number;
-  title: string;
-  message: string;
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -39,24 +35,8 @@ export class Dashboard implements OnInit {
   // Real events data from backend
   events: Event[] = [];
 
-  // Sample notifications data
-  notifications: Notification[] = [
-    {
-      id: 1,
-      title: 'New Event Added',
-      message: 'Youth Leadership Summit registration is now open'
-    },
-    {
-      id: 2,
-      title: 'New Event Added',
-      message: 'Youth Leadership Summit registration is now open'
-    },
-    {
-      id: 3,
-      title: 'Concern Resolved',
-      message: 'Your Concern has been addressed'
-    }
-  ];
+  // Notifications from concern updates
+  notifications: Notification[] = [];
 
   // Modal state
   showEventModal = false;
@@ -74,6 +54,7 @@ export class Dashboard implements OnInit {
     this.loadEvents();
     this.loadEventsJoined();
     this.loadConcerns();
+    this.loadNotifications();
   }
 
   loadUserData(): void {
@@ -195,6 +176,50 @@ export class Dashboard implements OnInit {
           console.error('Error loading concerns:', error);
           this.myConcerns = 0;
           this.resolvedConcerns = 0;
+          this.cdr.detectChanges();
+        }
+      );
+    }
+  }
+
+  loadNotifications(): void {
+    if (!this.currentYouthId) {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        this.currentYouthId = user.youthId || null;
+      }
+    }
+
+    if (this.currentYouthId) {
+      this.concernService.getConcernUpdatesByYouthId(this.currentYouthId).subscribe(
+        (updates) => {
+          console.log('Youth Dashboard - Fetched concern updates:', updates);
+
+          if (updates && updates.length > 0) {
+            // Convert concern updates to notifications
+            this.notifications = updates
+              .sort((a, b) => {
+                const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return dateB - dateA; // Most recent first
+              })
+              .slice(0, 5) // Show only 5 most recent
+              .map(update => ({
+                id: update.updateId || 0,
+                title: `Admin Response to Concern #${update.concernId}`,
+                message: update.updateText || '',
+                date: new Date(update.createdAt || new Date())
+              }));
+          } else {
+            this.notifications = [];
+          }
+
+          this.cdr.detectChanges();
+        },
+        (error) => {
+          console.error('Error loading notifications:', error);
+          this.notifications = [];
           this.cdr.detectChanges();
         }
       );

@@ -24,7 +24,7 @@ export class ManageProfiling implements OnInit, OnDestroy {
   isLoading: boolean = false;
   errorMessage: string = '';
   showExportDialog: boolean = false;
-  
+
   searchTerm: string = '';
   filterGender: string = '';
   filterCivilStatus: string = '';
@@ -32,27 +32,32 @@ export class ManageProfiling implements OnInit, OnDestroy {
   filterWorkStatus: string = '';
   filterSkVoter: string = '';
   filterNationalVoter: string = '';
-  
+
+  // Pagination
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  itemsPerPageOptions: number[] = [5, 10, 15, 20, 25];
+
   constructor(
     private youthProfileService: YouthProfileService,
     private cdr: ChangeDetectorRef
   ) {
     console.log('ManageProfiling component constructed');
   }
-  
+
   ngOnInit(): void {
     console.log('ManageProfiling ngOnInit called');
     this.loadYouthProfiles();
-    
+
     // Listen for clicks outside the export popover
     document.addEventListener('click', this.handleOutsideClick);
   }
-  
+
   ngOnDestroy(): void {
     // Clean up the event listener
     document.removeEventListener('click', this.handleOutsideClick);
   }
-  
+
   handleOutsideClick = (event: MouseEvent) => {
     const popover = document.querySelector('.export-dialog-popover');
     const exportBtn = document.querySelector('.btn-export');
@@ -62,7 +67,7 @@ export class ManageProfiling implements OnInit, OnDestroy {
       }
     }
   }
-  
+
   initializeProfile(): YouthProfileDTO {
     return {
       firstName: '',
@@ -86,20 +91,20 @@ export class ManageProfiling implements OnInit, OnDestroy {
       }
     };
   }
-  
+
   loadYouthProfiles(): void {
     console.log('Loading youth profiles...');
     this.isLoading = true;
     this.errorMessage = '';
-    
+
     this.youthProfileService.getAllYouthProfilesWithClassification().subscribe({
       next: (data) => {
         console.log('Youth profiles loaded successfully:', data);
         this.youthProfiles = data || [];
         this.isLoading = false;
-        
+
         this.cdr.detectChanges();
-        
+
         if (this.youthProfiles.length === 0) {
           console.warn('No youth profiles found in database');
         } else {
@@ -111,9 +116,9 @@ export class ManageProfiling implements OnInit, OnDestroy {
         this.errorMessage = 'Failed to load youth profiles. Please check if the backend server is running.';
         this.isLoading = false;
         this.youthProfiles = [];
-        
+
         this.cdr.detectChanges();
-        
+
         if (error.status === 0) {
           console.error('Backend server is not reachable. Make sure it is running on http://localhost:8080');
         } else {
@@ -125,13 +130,13 @@ export class ManageProfiling implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   openAddModal(): void {
     this.isEditMode = false;
     this.currentProfile = this.initializeProfile();
     this.showModal = true;
   }
-  
+
   openEditModal(profile: YouthProfileWithClassification): void {
     this.isEditMode = true;
     this.selectedYouthId = profile.youthId;
@@ -158,17 +163,17 @@ export class ManageProfiling implements OnInit, OnDestroy {
     };
     this.showModal = true;
   }
-  
+
   closeModal(): void {
     this.showModal = false;
     this.currentProfile = this.initializeProfile();
     this.selectedYouthId = undefined;
   }
-  
+
   saveProfile(): void {
     console.log('Saving profile...', this.isEditMode ? 'Edit Mode' : 'Create Mode');
     console.log('Profile data:', this.currentProfile);
-    
+
     if (this.isEditMode && this.selectedYouthId) {
       this.youthProfileService.updateYouthProfileWithClassification(this.selectedYouthId, this.currentProfile).subscribe({
         next: (response) => {
@@ -197,10 +202,10 @@ export class ManageProfiling implements OnInit, OnDestroy {
       });
     }
   }
-  
+
   deleteProfile(youthId?: number): void {
     if (!youthId) return;
-    
+
     if (confirm('Are you sure you want to delete this youth profile?')) {
       this.youthProfileService.deleteYouthProfile(youthId).subscribe({
         next: () => {
@@ -214,7 +219,7 @@ export class ManageProfiling implements OnInit, OnDestroy {
       });
     }
   }
-  
+
   getFullName(profile: YouthProfileWithClassification): string {
     const parts = [
       profile.firstName,
@@ -224,38 +229,38 @@ export class ManageProfiling implements OnInit, OnDestroy {
     ].filter(Boolean);
     return parts.join(' ');
   }
-  
+
   get filteredProfiles(): YouthProfileWithClassification[] {
     return this.youthProfiles.filter(profile => {
       const searchLower = this.searchTerm.toLowerCase();
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         this.getFullName(profile).toLowerCase().includes(searchLower) ||
         profile.contactNumber.toLowerCase().includes(searchLower) ||
         profile.completeAddress.toLowerCase().includes(searchLower) ||
         (profile.youthClassification?.toLowerCase() || '').includes(searchLower) ||
         (profile.educationBackground?.toLowerCase() || '').includes(searchLower);
-      
+
       const matchesGender = !this.filterGender || profile.gender === this.filterGender;
-      
+
       const matchesCivilStatus = !this.filterCivilStatus || profile.civilStatus === this.filterCivilStatus;
-      
+
       const matchesClassification = !this.filterClassification || profile.youthClassification === this.filterClassification;
-      
+
       const matchesWorkStatus = !this.filterWorkStatus || profile.workStatus === this.filterWorkStatus;
-      
-      const matchesSkVoter = !this.filterSkVoter || 
+
+      const matchesSkVoter = !this.filterSkVoter ||
         (this.filterSkVoter === 'yes' && profile.skVoter) ||
         (this.filterSkVoter === 'no' && !profile.skVoter);
-      
-      const matchesNationalVoter = !this.filterNationalVoter || 
+
+      const matchesNationalVoter = !this.filterNationalVoter ||
         (this.filterNationalVoter === 'yes' && profile.nationalVoter) ||
         (this.filterNationalVoter === 'no' && !profile.nationalVoter);
-      
-      return matchesSearch && matchesGender && matchesCivilStatus && 
-             matchesClassification && matchesWorkStatus && matchesSkVoter && matchesNationalVoter;
+
+      return matchesSearch && matchesGender && matchesCivilStatus &&
+        matchesClassification && matchesWorkStatus && matchesSkVoter && matchesNationalVoter;
     });
   }
-  
+
   clearFilters(): void {
     this.searchTerm = '';
     this.filterGender = '';
@@ -264,8 +269,74 @@ export class ManageProfiling implements OnInit, OnDestroy {
     this.filterWorkStatus = '';
     this.filterSkVoter = '';
     this.filterNationalVoter = '';
+    this.currentPage = 1;
   }
-  
+
+  // Paginated profiles for display
+  get paginatedProfiles(): YouthProfileWithClassification[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.filteredProfiles.slice(startIndex, endIndex);
+  }
+
+  // Total pages calculation
+  get totalPages(): number {
+    return Math.ceil(this.filteredProfiles.length / this.itemsPerPage);
+  }
+
+  // Page numbers for pagination display
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+
+    if (this.totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let startPage = Math.max(1, this.currentPage - 2);
+      let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  }
+
+  // Pagination methods
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  onItemsPerPageChange(): void {
+    this.currentPage = 1;
+  }
+
+  // Reset to page 1 when search/filter changes
+  onFilterChange(): void {
+    this.currentPage = 1;
+  }
+
   exportToPDF(): void {
     const profiles = this.filteredProfiles;
     if (profiles.length === 0) {

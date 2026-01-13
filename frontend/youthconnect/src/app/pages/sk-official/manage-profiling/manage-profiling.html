@@ -9,16 +9,13 @@
                 </button>
             </div>
         </div>
-        
-        <div class="search-filter-section" *ngIf="!isLoading && !errorMessage">
+
+        @if (!isLoading && !errorMessage) {
+        <div class="search-filter-section">
             <div class="search-bar-row" style="display: flex; align-items: center; gap: 12px;">
                 <div class="search-box" style="flex: 1;">
-                    <input 
-                        type="text" 
-                        [(ngModel)]="searchTerm" 
-                        placeholder="Search by name, contact, address, classification..."
-                        class="search-input"
-                    />
+                    <input type="text" [(ngModel)]="searchTerm"
+                        placeholder="Search by name, contact, address, classification..." class="search-input" />
                 </div>
                 <button class="btn-export" (click)="exportToPDF()">Export PDF</button>
                 <button class="btn-export" (click)="exportToExcel()">Export Excel</button>
@@ -29,7 +26,7 @@
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                 </select>
-                
+
                 <select [(ngModel)]="filterCivilStatus" class="filter-select">
                     <option value="">All Civil Status</option>
                     <option value="Single">Single</option>
@@ -37,7 +34,7 @@
                     <option value="Widowed">Widowed</option>
                     <option value="Separated">Separated</option>
                 </select>
-                
+
                 <select [(ngModel)]="filterClassification" class="filter-select">
                     <option value="">All Classifications</option>
                     <option value="In School Youth">In School Youth</option>
@@ -46,7 +43,7 @@
                     <option value="Youth with Disability">Youth with Disability</option>
                     <option value="Children in Conflict with Law">Children in Conflict with Law</option>
                 </select>
-                
+
                 <select [(ngModel)]="filterWorkStatus" class="filter-select">
                     <option value="">All Work Status</option>
                     <option value="Employed">Employed</option>
@@ -54,39 +51,48 @@
                     <option value="Self-Employed">Self-Employed</option>
                     <option value="Student">Student</option>
                 </select>
-                
+
                 <select [(ngModel)]="filterSkVoter" class="filter-select">
                     <option value="">SK Voter - All</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                 </select>
-                
+
                 <select [(ngModel)]="filterNationalVoter" class="filter-select">
                     <option value="">National Voter - All</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                 </select>
-                
+
                 <button class="btn-clear-filters" (click)="clearFilters()">
                     ✖ Clear Filters
                 </button>
             </div>
-            
+
             <div class="results-summary">
-                Showing {{ filteredProfiles.length }} of {{ youthProfiles.length }} profiles
+                Showing {{ paginatedProfiles.length }} of {{ filteredProfiles.length }} profiles
+                @if (filteredProfiles.length !== youthProfiles.length) {
+                <span>(filtered from {{ youthProfiles.length }} total)</span>
+                }
             </div>
         </div>
-        
-        <div *ngIf="errorMessage" class="error-banner">
+        }
+
+        @if (errorMessage) {
+        <div class="error-banner">
             <p>{{ errorMessage }}</p>
             <button (click)="loadYouthProfiles()">Retry</button>
         </div>
-        
-        <div *ngIf="isLoading" class="loading-container">
+        }
+
+        @if (isLoading) {
+        <div class="loading-container">
             <p>Loading youth profiles...</p>
         </div>
-        
-        <div class="table-container" *ngIf="!isLoading && !errorMessage">
+        }
+
+        @if (!isLoading && !errorMessage) {
+        <div class="table-container">
             <table class="youth-table">
                 <thead>
                     <tr>
@@ -106,7 +112,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let profile of filteredProfiles">
+                    @for (profile of paginatedProfiles; track profile.youthId) {
+                    <tr>
                         <td>{{ getFullName(profile) }}</td>
                         <td>{{ profile.gender }}</td>
                         <td>{{ profile.birthday }}</td>
@@ -120,39 +127,89 @@
                         <td>{{ profile.nationalVoter ? 'Yes' : 'No' }}</td>
                         <td>{{ profile.numAttendedAssemblies || 0 }}</td>
                         <td class="actions">
-                            <button class="btn-edit" 
-                                    (click)="openEditModal(profile)">
+                            <button class="btn-edit" (click)="openEditModal(profile)">
                                 Edit
                             </button>
-                            <button class="btn-delete" 
-                                    (click)="deleteProfile(profile.youthId)">
+                            <button class="btn-delete" (click)="deleteProfile(profile.youthId)">
                                 Delete
                             </button>
                         </td>
                     </tr>
-                    <tr *ngIf="filteredProfiles.length === 0 && youthProfiles.length > 0">
+                    }
+                    @if (paginatedProfiles.length === 0 && youthProfiles.length > 0) {
+                    <tr>
                         <td colspan="13" style="text-align: center; padding: 20px;">
                             No profiles match your filters
                         </td>
                     </tr>
-                    <tr *ngIf="youthProfiles.length === 0">
+                    }
+                    @if (youthProfiles.length === 0) {
+                    <tr>
                         <td colspan="13" style="text-align: center; padding: 20px;">
                             No youth profiles found
                         </td>
                     </tr>
+                    }
                 </tbody>
             </table>
+
+            <!-- Pagination Controls -->
+            @if (filteredProfiles.length > 0) {
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    <span>Show</span>
+                    <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" class="items-per-page-select">
+                        @for (option of itemsPerPageOptions; track option) {
+                        <option [value]="option">{{ option }}</option>
+                        }
+                    </select>
+                    <span>entries</span>
+                </div>
+
+                <div class="pagination-controls">
+                    <button class="pagination-btn" (click)="goToPage(1)" [disabled]="currentPage === 1"
+                        title="First Page">
+                        «
+                    </button>
+                    <button class="pagination-btn" (click)="previousPage()" [disabled]="currentPage === 1"
+                        title="Previous">
+                        ‹
+                    </button>
+
+                    @for (page of pageNumbers; track page) {
+                    <button class="pagination-btn" [class.active]="page === currentPage" (click)="goToPage(page)">
+                        {{ page }}
+                    </button>
+                    }
+
+                    <button class="pagination-btn" (click)="nextPage()" [disabled]="currentPage === totalPages"
+                        title="Next">
+                        ›
+                    </button>
+                    <button class="pagination-btn" (click)="goToPage(totalPages)"
+                        [disabled]="currentPage === totalPages" title="Last Page">
+                        »
+                    </button>
+                </div>
+
+                <div class="pagination-summary">
+                    Page {{ currentPage }} of {{ totalPages }}
+                </div>
+            </div>
+            }
         </div>
+        }
     </div>
 </div>
 
-<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+@if (showModal) {
+<div class="modal-overlay" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
             <h2>{{ isEditMode ? 'Edit Youth Profile' : 'Add New Youth Profile' }}</h2>
             <button class="close-btn" (click)="closeModal()">&times;</button>
         </div>
-        
+
         <form class="modal-form" (ngSubmit)="saveProfile()">
             <div class="form-section">
                 <h3>Personal Information</h3>
@@ -166,7 +223,7 @@
                         <input type="text" [(ngModel)]="currentProfile.middleName" name="middleName">
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Last Name <span class="required">*</span></label>
@@ -174,10 +231,11 @@
                     </div>
                     <div class="form-group">
                         <label>Suffix</label>
-                        <input type="text" [(ngModel)]="currentProfile.suffix" name="suffix" placeholder="Jr., Sr., III">
+                        <input type="text" [(ngModel)]="currentProfile.suffix" name="suffix"
+                            placeholder="Jr., Sr., III">
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Gender <span class="required">*</span></label>
@@ -192,7 +250,7 @@
                         <input type="date" [(ngModel)]="currentProfile.birthday" name="birthday" required>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Contact Number <span class="required">*</span></label>
@@ -209,19 +267,21 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Complete Address <span class="required">*</span></label>
-                    <textarea [(ngModel)]="currentProfile.completeAddress" name="completeAddress" rows="2" required></textarea>
+                    <textarea [(ngModel)]="currentProfile.completeAddress" name="completeAddress" rows="2"
+                        required></textarea>
                 </div>
             </div>
-            
+
             <div class="form-section">
                 <h3>Youth Classification</h3>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Youth Classification <span class="required">*</span></label>
-                        <select [(ngModel)]="currentProfile.classification!.youthClassification" name="youthClassification" required>
+                        <select [(ngModel)]="currentProfile.classification!.youthClassification"
+                            name="youthClassification" required>
                             <option value="">Select Classification</option>
                             <option value="In-School Youth">In-School Youth</option>
                             <option value="Out-of-School Youth">Out-of-School Youth</option>
@@ -232,7 +292,8 @@
                     </div>
                     <div class="form-group">
                         <label>Education Background <span class="required">*</span></label>
-                        <select [(ngModel)]="currentProfile.classification!.educationBackground" name="educationBackground" required>
+                        <select [(ngModel)]="currentProfile.classification!.educationBackground"
+                            name="educationBackground" required>
                             <option value="">Select Education</option>
                             <option value="Elementary">Elementary</option>
                             <option value="High School">High School</option>
@@ -243,7 +304,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Work Status <span class="required">*</span></label>
@@ -257,10 +318,11 @@
                     </div>
                     <div class="form-group">
                         <label>Number of Assemblies Attended</label>
-                        <input type="number" [(ngModel)]="currentProfile.classification!.numAttendedAssemblies" name="numAttendedAssemblies" min="0">
+                        <input type="number" [(ngModel)]="currentProfile.classification!.numAttendedAssemblies"
+                            name="numAttendedAssemblies" min="0">
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group checkbox-group">
                         <label>
@@ -270,24 +332,28 @@
                     </div>
                     <div class="form-group checkbox-group">
                         <label>
-                            <input type="checkbox" [(ngModel)]="currentProfile.classification!.nationalVoter" name="nationalVoter">
+                            <input type="checkbox" [(ngModel)]="currentProfile.classification!.nationalVoter"
+                                name="nationalVoter">
                             National Voter
                         </label>
                     </div>
                     <div class="form-group checkbox-group">
                         <label>
-                            <input type="checkbox" [(ngModel)]="currentProfile.classification!.pastVoter" name="pastVoter">
+                            <input type="checkbox" [(ngModel)]="currentProfile.classification!.pastVoter"
+                                name="pastVoter">
                             Past Voter
                         </label>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Non-Attendance Reason</label>
-                    <textarea [(ngModel)]="currentProfile.classification!.nonAttendanceReason" name="nonAttendanceReason" rows="2" placeholder="Reason for not attending assemblies"></textarea>
+                    <textarea [(ngModel)]="currentProfile.classification!.nonAttendanceReason"
+                        name="nonAttendanceReason" rows="2"
+                        placeholder="Reason for not attending assemblies"></textarea>
                 </div>
             </div>
-            
+
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
                 <button type="submit" class="btn-save">{{ isEditMode ? 'Update' : 'Save' }}</button>
@@ -295,3 +361,4 @@
         </form>
     </div>
 </div>
+}

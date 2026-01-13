@@ -4,14 +4,11 @@ import { SkSidebar } from '../../../shared/components/sk-sidebar/sk-sidebar';
 import { EventService } from '../../../services/event.service';
 import { ConcernService } from '../../../services/concern.service';
 import { YouthProfileService } from '../../../services/youth-profile.service';
+import { TaskService } from '../../../services/task.service';
 import type { Event } from '../../../models/event.model';
 import type { Concern } from '../../../models/concern.model';
+import type { DisplayTask } from '../../../models/task.model';
 import { DatePipe, CommonModule } from '@angular/common';
-
-interface Task {
-  id: number;
-  title: string;
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -27,17 +24,13 @@ export class Dashboard implements OnInit {
   fullName = '';
 
   // Stats
-  activeTasks = 3;
+  activeTasks = 0;
   upcomingEvents = 0;
   pendingConcerns = 0;
   youthMembers = 0;
 
-  // Sample tasks data
-  tasks: Task[] = [
-    { id: 1, title: 'Prepare Sports Festival Budget' },
-    { id: 2, title: 'Prepare Sports Festival Budget' },
-    { id: 3, title: 'Prepare Sports Festival Budget' }
-  ];
+  // Tasks data from backend
+  tasks: DisplayTask[] = [];
 
   // Real events data from backend
   events: Event[] = [];
@@ -53,6 +46,7 @@ export class Dashboard implements OnInit {
     private eventService: EventService,
     private concernService: ConcernService,
     private youthProfileService: YouthProfileService,
+    private taskService: TaskService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -61,6 +55,7 @@ export class Dashboard implements OnInit {
     this.loadEvents();
     this.loadConcerns();
     this.loadYouthMembers();
+    this.loadTasks();
   }
 
   loadUserData(): void {
@@ -163,6 +158,48 @@ export class Dashboard implements OnInit {
       (error) => {
         console.error('Error loading youth profiles:', error);
         this.youthMembers = 0;
+        this.cdr.detectChanges();
+      }
+    );
+  }
+
+  loadTasks(): void {
+    this.taskService.getAllTasks().subscribe(
+      (tasks) => {
+        console.log('Dashboard - Fetched tasks:', tasks);
+
+        if (tasks && tasks.length > 0) {
+          // Count active tasks (not completed or cancelled)
+          const activeTasks = tasks.filter(task =>
+            task.status?.toLowerCase() !== 'completed' &&
+            task.status?.toLowerCase() !== 'cancelled'
+          );
+          this.activeTasks = activeTasks.length;
+
+          // Get the most recent tasks
+          const recentTasks = tasks
+            .sort((a, b) => {
+              const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              return dateB - dateA;
+            })
+            .slice(0, 3);
+
+          this.tasks = recentTasks.map(task => ({
+            id: task.taskId || 0,
+            title: task.taskTitle || 'Untitled Task'
+          }));
+        } else {
+          this.activeTasks = 0;
+          this.tasks = [];
+        }
+
+        this.cdr.detectChanges();
+      },
+      (error) => {
+        console.error('Error loading tasks:', error);
+        this.activeTasks = 0;
+        this.tasks = [];
         this.cdr.detectChanges();
       }
     );
