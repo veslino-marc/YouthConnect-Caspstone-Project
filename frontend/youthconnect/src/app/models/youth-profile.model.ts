@@ -9,6 +9,8 @@ export interface YouthProfile {
     contactNumber: string;
     completeAddress: string;
     civilStatus: string;
+    email?: string;
+    password?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -59,5 +61,7 @@ export interface YouthProfileDTO {
     contactNumber: string;
     completeAddress: string;
     civilStatus: string;
+    email?: string;
+    password?: string;
     classification?: YouthClassification;
 }

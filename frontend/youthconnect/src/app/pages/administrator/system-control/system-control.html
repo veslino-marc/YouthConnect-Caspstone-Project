@@ -1,0 +1,67 @@
+<div class="system-control">
+  <div class="header">
+    <h1>System Control</h1>
+    <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+  </div>
+
+  <div class="control-sections">
+    <div class="section">
+      <h2>System Status</h2>
+      <div class="status-grid">
+        <div class="status-item">
+          <span class="label">Database</span>
+          <span class="status connected">{{ systemStatus.database }}</span>
+        </div>
+        <div class="status-item">
+          <span class="label">API Server</span>
+          <span class="status connected">{{ systemStatus.api }}</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Frontend</span>
+          <span class="status connected">{{ systemStatus.frontend }}</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Last Backup</span>
+          <span class="status">{{ systemStatus.lastBackup }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Administrative Controls</h2>
+      <div class="control-buttons">
+        <button (click)="navigateTo('manage-administrators')" class="control-btn">
+          <span class="icon">👥</span>
+          <span class="text">Manage Administrators</span>
+        </button>
+        <button (click)="navigateTo('manage-sk-officials')" class="control-btn">
+          <span class="icon">📋</span>
+          <span class="text">Manage SK Officials</span>
+        </button>
+        <button (click)="navigateTo('manage-youth-members')" class="control-btn">
+          <span class="icon">👨‍👩‍👧‍👦</span>
+          <span class="text">Manage Youth Members</span>
+        </button>
+        <button (click)="navigateTo('system-statistics')" class="control-btn">
+          <span class="icon">📊</span>
+          <span class="text">View Statistics</span>
+        </button>
+        <button (click)="navigateTo('backup-restore')" class="control-btn">
+          <span class="icon">💾</span>
+          <span class="text">Backup/Restore</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>System Information</h2>
+      <div class="info-box">
+        <p><strong>Application:</strong> YouthConnect System</p>
+        <p><strong>Version:</strong> 1.0.0</p>
+        <p><strong>Database:</strong> MySQL 10.4.32-MariaDB</p>
+        <p><strong>Backend:</strong> Spring Boot 3.x</p>
+        <p><strong>Frontend:</strong> Angular 17+</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,11 +2,14 @@ package com.youthconnect.youthconnect_id.services.implementation;
 
 import com.youthconnect.youthconnect_id.models.YouthProfile;
 import com.youthconnect.youthconnect_id.models.YouthClassification;
+import com.youthconnect.youthconnect_id.models.User;
 import com.youthconnect.youthconnect_id.models.dto.YouthProfileDTO;
 import com.youthconnect.youthconnect_id.models.dto.YouthProfileWithClassificationDTO;
 import com.youthconnect.youthconnect_id.repositories.YouthProfileRepository;
 import com.youthconnect.youthconnect_id.repositories.YouthClassificationRepository;
+import com.youthconnect.youthconnect_id.repositories.UserRepository;
 import com.youthconnect.youthconnect_id.services.YouthProfileService;
+import com.youthconnect.youthconnect_id.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,9 @@ public class YouthProfileServiceImpl implements YouthProfileService {
     
     @Autowired
     private YouthClassificationRepository youthClassificationRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
     
     @Override
     @Transactional
@@ -45,6 +51,20 @@ public class YouthProfileServiceImpl implements YouthProfileService {
         youthProfile.setCivilStatus(youthProfileDTO.getCivilStatus());
         
         YouthProfile savedProfile = youthProfileRepository.save(youthProfile);
+        
+        // Create User account for login
+        if (youthProfileDTO.getEmail() != null && youthProfileDTO.getPassword() != null) {
+            User user = new User();
+            user.setYouthId(savedProfile.getYouthId()); // Link to youth profile
+            user.setEmail(youthProfileDTO.getEmail());
+            user.setPasswordHash(PasswordUtil.hashPassword(youthProfileDTO.getPassword())); // Hash the password
+            user.setRoleId(1); // Role ID 1 = youth_member
+            user.setIsActive(true);
+            user.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+            
+            userRepository.save(user);
+            System.out.println("Created user account for youth_id: " + savedProfile.getYouthId());
+        }
         
         // Save youth classification if provided
         if (youthProfileDTO.getClassification() != null) {
