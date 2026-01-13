@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Concern, ConcernDTO } from '../models/concern.model';
+import { Concern, ConcernDTO, ConcernUpdate } from '../models/concern.model';
 
 @Injectable({
     providedIn: 'root'
@@ -38,6 +38,14 @@ export class ConcernService {
     saveConcernUpdate(concernId: number, updateText: string, updatedByAdminId: number): Observable<any> {
         const payload = { concernId, updateText, updatedByAdminId };
         return this.http.post(`${this.apiUrl}/${concernId}/updates`, payload);
+    }
+
+    getConcernUpdates(concernId: number): Observable<ConcernUpdate[]> {
+        return this.http.get<ConcernUpdate[]>(`${this.apiUrl}/${concernId}/updates`);
+    }
+
+    getConcernUpdatesByYouthId(youthId: number): Observable<ConcernUpdate[]> {
+        return this.http.get<ConcernUpdate[]>(`${this.apiUrl}/updates/youth/${youthId}`);
     }
 
     deleteConcern(id: number): Observable<void> {

@@ -86,6 +86,39 @@ public class ConcernController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/updates/youth/{youthId}")
+    public ResponseEntity<List<ConcernUpdate>> getConcernUpdatesByYouthId(@PathVariable Integer youthId) {
+        try {
+            System.out.println("=== Fetching concern updates for youth ID: " + youthId);
+            // Get all concerns for this youth
+            List<Concern> concerns = concernService.getConcernsByYouthId(youthId);
+            System.out.println("Found " + concerns.size() + " concerns for youth " + youthId);
+            
+            // Collect all concern IDs
+            List<Integer> concernIds = concerns.stream()
+                .map(Concern::getConcernId)
+                .toList();
+            
+            // Get all updates for these concerns
+            List<ConcernUpdate> updates = concernIds.isEmpty() 
+                ? List.of() 
+                : concernUpdateRepository.findByConcernIdIn(concernIds);
+            
+            System.out.println("Found " + updates.size() + " updates for these concerns");
+            return new ResponseEntity<>(updates, HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println("Error fetching concern updates for youth: " + youthId);
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{concernId}/updates")
+    public ResponseEntity<List<ConcernUpdate>> getConcernUpdates(@PathVariable Integer concernId) {
+        List<ConcernUpdate> updates = concernUpdateRepository.findByConcernId(concernId);
+        return new ResponseEntity<>(updates, HttpStatus.OK);
+    }
+
     @PostMapping("/{concernId}/updates")
     public ResponseEntity<ConcernUpdate> saveConcernUpdate(@PathVariable Integer concernId, @RequestBody Map<String, Object> request) {
         try {

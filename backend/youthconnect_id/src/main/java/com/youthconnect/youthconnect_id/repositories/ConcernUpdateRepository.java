@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ConcernUpdateRepository extends JpaRepository<ConcernUpdate, Integer> {
     List<ConcernUpdate> findByConcernId(Integer concernId);
+    List<ConcernUpdate> findByConcernIdIn(List<Integer> concernIds);
 }
