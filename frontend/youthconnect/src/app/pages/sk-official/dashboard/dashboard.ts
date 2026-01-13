@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { SkSidebar } from '../../../shared/components/sk-sidebar/sk-sidebar';
 import { EventService } from '../../../services/event.service';
 import { ConcernService } from '../../../services/concern.service';
+import { YouthProfileService } from '../../../services/youth-profile.service';
 import type { Event } from '../../../models/event.model';
 import type { Concern } from '../../../models/concern.model';
 import { DatePipe, CommonModule } from '@angular/common';
@@ -29,7 +30,7 @@ export class Dashboard implements OnInit {
   activeTasks = 3;
   upcomingEvents = 0;
   pendingConcerns = 0;
-  youthMembers = 342;
+  youthMembers = 0;
 
   // Sample tasks data
   tasks: Task[] = [
@@ -51,6 +52,7 @@ export class Dashboard implements OnInit {
   constructor(
     private eventService: EventService,
     private concernService: ConcernService,
+    private youthProfileService: YouthProfileService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -58,6 +60,7 @@ export class Dashboard implements OnInit {
     this.loadUserData();
     this.loadEvents();
     this.loadConcerns();
+    this.loadYouthMembers();
   }
 
   loadUserData(): void {
@@ -145,6 +148,21 @@ export class Dashboard implements OnInit {
       },
       (error) => {
         console.error('Error loading concerns:', error);
+        this.cdr.detectChanges();
+      }
+    );
+  }
+
+  loadYouthMembers(): void {
+    this.youthProfileService.getAllYouthProfiles().subscribe(
+      (profiles) => {
+        console.log('Dashboard - Fetched youth profiles:', profiles);
+        this.youthMembers = profiles ? profiles.length : 0;
+        this.cdr.detectChanges();
+      },
+      (error) => {
+        console.error('Error loading youth profiles:', error);
+        this.youthMembers = 0;
         this.cdr.detectChanges();
       }
     );
