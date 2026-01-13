@@ -13,6 +13,7 @@ import { Concerns } from './pages/sk-official/concerns/concerns';
 import { CreateEvent } from './pages/sk-official/create-event/create-event';
 import { ManageProfiling } from './pages/sk-official/manage-profiling/manage-profiling';
 import { TaskTracker } from './pages/sk-official/task-tracker/task-tracker';
+import { BackupRestore } from './pages/sk-official/backup-restore/backup-restore';
 
 export const routes: Routes = [
   { path: '', component: LandingPage },
@@ -29,4 +30,5 @@ export const routes: Routes = [
   { path: 'sk-official/create-event', component: CreateEvent },
   { path: 'sk-official/manage-profiling', component: ManageProfiling },
   { path: 'sk-official/task-tracker', component: TaskTracker },
+  { path: 'sk-official/backup-restore', component: BackupRestore },
 ];
