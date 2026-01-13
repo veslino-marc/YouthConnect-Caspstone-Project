@@ -65,9 +65,15 @@
                 <div class="notifications-list">
                     @for (notification of notifications; track notification.id) {
                     <div class="notification-item">
-                        <div class="notification-title">{{ notification.title }}</div>
+                        <div class="notification-header">
+                            <div class="notification-title">{{ notification.title }}</div>
+                            <div class="notification-date">{{ notification.date | date:'M/d/yy, h:mm a' }}</div>
+                        </div>
                         <div class="notification-message">{{ notification.message }}</div>
                     </div>
+                    }
+                    @if (notifications.length === 0) {
+                    <div class="no-notifications">No notifications</div>
                     }
                 </div>
             </div>

@@ -9,3 +9,8 @@ export interface Task {
   dueDate?: Date;
   createdAt?: Date;
 }
+
+export interface DisplayTask {
+  id: number;
+  title: string;
+}
