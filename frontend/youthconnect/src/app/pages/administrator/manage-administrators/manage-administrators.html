@@ -1,0 +1,100 @@
+<div class="manage-administrators">
+  <div class="header">
+    <h1>Manage Administrators</h1>
+    <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+  </div>
+
+  @if (successMessage) {
+    <div class="success-message">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+    <div class="error-message">{{ errorMessage }}</div>
+  }
+
+  <div class="controls">
+    <button (click)="openForm()" class="add-btn">+ Add New Administrator</button>
+  </div>
+
+  @if (showForm) {
+    <div class="form-container">
+      <div class="form-card">
+        <h2>{{ isEditing ? 'Edit Administrator' : 'Add New Administrator' }}</h2>
+        
+        <div class="form-group">
+          <label>Username</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentAdministrator.username" 
+            placeholder="Enter username"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input 
+            type="email" 
+            [(ngModel)]="currentAdministrator.email" 
+            placeholder="Enter email"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input 
+            type="password" 
+            [(ngModel)]="currentAdministrator.passwordHash" 
+            placeholder="Enter password"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button (click)="saveAdministrator()" class="save-btn">Save</button>
+          <button (click)="closeForm()" class="cancel-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="table-container">
+    <table class="administrators-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (admin of administrators; track admin.administratorId) {
+          <tr>
+            <td>{{ admin.administratorId }}</td>
+            <td>{{ admin.username }}</td>
+            <td>{{ admin.email }}</td>
+            <td>
+              <span [class.active]="admin.isActive" [class.inactive]="!admin.isActive">
+                {{ admin.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>{{ admin.createdAt | date: 'short' }}</td>
+            <td class="actions">
+              <button (click)="editAdministrator(admin)" class="edit-btn">Edit</button>
+              @if (admin.isActive) {
+                <button (click)="deactivateAdministrator(admin.administratorId)" class="deactivate-btn">Deactivate</button>
+              } @else {
+                <button (click)="activateAdministrator(admin.administratorId)" class="activate-btn">Activate</button>
+              }
+              <button (click)="deleteAdministrator(admin.administratorId)" class="delete-btn">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<div class="manage-youth-members">
+  <div class="header">
+    <h1>Manage Youth Members</h1>
+    <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+  </div>
+
+  @if (successMessage) {
+    <div class="success-message">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+    <div class="error-message">{{ errorMessage }}</div>
+  }
+
+  <div class="search-container">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      (input)="searchYouthMembers()"
+      placeholder="Search by name or email..."
+      class="search-input"
+    />
+  </div>
+
+  <div class="table-container">
+    <table class="youth-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Gender</th>
+          <th>Birthday</th>
+          <th>Contact Number</th>
+          <th>Civil Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (youth of filteredYouthMembers; track youth.youthId) {
+          <tr>
+            <td>{{ youth.youthId }}</td>
+            <td>{{ youth.firstName }}</td>
+            <td>{{ youth.lastName }}</td>
+            <td>{{ youth.gender }}</td>
+            <td>{{ youth.birthday | date: 'short' }}</td>
+            <td>{{ youth.contactNumber }}</td>
+            <td>{{ youth.civilStatus }}</td>
+            <td class="actions">
+              <button (click)="viewDetails(youth.youthId)" class="view-btn">View</button>
+              <button (click)="deleteYouthMember(youth.youthId)" class="delete-btn">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

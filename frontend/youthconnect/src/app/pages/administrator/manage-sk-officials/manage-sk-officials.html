@@ -1,0 +1,110 @@
+<div class="manage-sk-officials">
+  <div class="header">
+    <h1>Manage SK Officials</h1>
+    <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+  </div>
+
+  @if (successMessage) {
+    <div class="success-message">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+    <div class="error-message">{{ errorMessage }}</div>
+  }
+
+  <div class="controls">
+    <button (click)="openForm()" class="add-btn">+ Add New SK Official</button>
+  </div>
+
+  @if (showForm) {
+    <div class="form-container">
+      <div class="form-card">
+        <h2>{{ isEditing ? 'Edit SK Official' : 'Add New SK Official' }}</h2>
+        
+        <div class="form-group">
+          <label>First Name</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentOfficial.firstName" 
+            placeholder="Enter first name"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Last Name</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentOfficial.lastName" 
+            placeholder="Enter last name"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input 
+            type="email" 
+            [(ngModel)]="currentOfficial.email" 
+            placeholder="Enter email"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input 
+            type="password" 
+            [(ngModel)]="currentOfficial.passwordHash" 
+            placeholder="Enter password"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button (click)="saveOfficial()" class="save-btn">Save</button>
+          <button (click)="closeForm()" class="cancel-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="table-container">
+    <table class="officials-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (official of skOfficials; track official.adminId) {
+          <tr>
+            <td>{{ official.adminId }}</td>
+            <td>{{ official.firstName }}</td>
+            <td>{{ official.lastName }}</td>
+            <td>{{ official.email }}</td>
+            <td>
+              <span [class.active]="official.isActive" [class.inactive]="!official.isActive">
+                {{ official.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>{{ official.createdAt | date: 'short' }}</td>
+            <td class="actions">
+              <button (click)="editOfficial(official)" class="edit-btn">Edit</button>
+              @if (official.isActive) {
+                <button (click)="deactivateOfficial(official.adminId)" class="deactivate-btn">Deactivate</button>
+              }
+              <button (click)="deleteOfficial(official.adminId)" class="delete-btn">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -3,18 +3,15 @@ package com.youthconnect.youthconnect_id.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tbl_user")
-public class User {
+@Table(name = "tbl_administrator")
+public class Administrator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Integer userId;
+    @Column(name = "administrator_id")
+    private Integer administratorId;
 
-    @Column(name = "youth_id")
-    private Integer youthId;
-
-    @Column(name = "role_id")
-    private Integer roleId;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "email")
     private String email;
@@ -28,23 +25,17 @@ public class User {
     @Column(name = "created_at")
     private java.sql.Timestamp createdAt;
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getAdministratorId() {
+        return administratorId;
     }
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setAdministratorId(Integer administratorId) {
+        this.administratorId = administratorId;
     }
-    public Integer getYouthId() {
-        return youthId;
+    public String getUsername() {
+        return username;
     }
-    public void setYouthId(Integer youthId) {
-        this.youthId = youthId;
-    }
-    public Integer getRoleId() {
-        return roleId;
-    }
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
+    public void setUsername(String username) {
+        this.username = username;
     }
     public String getEmail() {
         return email;

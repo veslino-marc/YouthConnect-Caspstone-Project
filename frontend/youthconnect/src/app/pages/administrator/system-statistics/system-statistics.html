@@ -1,0 +1,82 @@
+<div class="system-statistics">
+  <div class="header">
+    <h1>System Statistics</h1>
+    <button (click)="goBack()" class="back-btn">← Back to Dashboard</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-section">
+      <h2>SK Officials</h2>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <p class="label">Total SK Officials</p>
+          <p class="value">{{ statistics.totalSkOfficials }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Active SK Officials</p>
+          <p class="value">{{ statistics.activeSkOfficials }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-section">
+      <h2>Youth Members</h2>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <p class="label">Total Youth Members</p>
+          <p class="value">{{ statistics.totalYouthMembers }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Active Youth Members</p>
+          <p class="value">{{ statistics.activeYouthMembers }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-section">
+      <h2>Events</h2>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <p class="label">Total Events</p>
+          <p class="value">{{ statistics.totalEvents }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-section">
+      <h2>Concerns</h2>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <p class="label">Total Concerns</p>
+          <p class="value">{{ statistics.totalConcerns }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Open Concerns</p>
+          <p class="value">{{ statistics.openConcerns }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Resolved Concerns</p>
+          <p class="value">{{ statistics.resolvedConcerns }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-section">
+      <h2>Tasks</h2>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <p class="label">Total Tasks</p>
+          <p class="value">{{ statistics.totalTasks }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Completed Tasks</p>
+          <p class="value">{{ statistics.completedTasks }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Pending Tasks</p>
+          <p class="value">{{ statistics.pendingTasks }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

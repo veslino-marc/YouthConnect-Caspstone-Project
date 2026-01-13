@@ -1,0 +1,63 @@
+<div class="admin-dashboard">
+  <div class="header">
+    <h1>Administrator Dashboard</h1>
+    <div class="user-info">
+      <span>Welcome, {{ administrator?.username || 'Administrator' }}</span>
+      <button (click)="logout()" class="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <div class="stats-container">
+    <div class="stat-card">
+      <h3>SK Officials</h3>
+      <p class="stat-number">{{ isLoading ? '...' : totalSkOfficials }}</p>
+      <button (click)="navigateTo('manage-sk-officials')" class="manage-btn">Manage</button>
+    </div>
+
+    <div class="stat-card">
+      <h3>Youth Members</h3>
+      <p class="stat-number">{{ isLoading ? '...' : totalYouthMembers }}</p>
+      <button (click)="navigateTo('manage-youth-members')" class="manage-btn">Manage</button>
+    </div>
+
+    <div class="stat-card">
+      <h3>Active Youth</h3>
+      <p class="stat-number">{{ isLoading ? '...' : activeYouthMembers }}</p>
+      <button (click)="navigateTo('manage-youth-members')" class="manage-btn">View</button>
+    </div>
+
+    <div class="stat-card">
+      <h3>System Control</h3>
+      <p class="stat-number">⚙️</p>
+      <button (click)="navigateTo('system-control')" class="manage-btn">Access</button>
+    </div>
+  </div>
+
+  <div class="actions-container">
+    <div class="action-section">
+      <h2>System Management</h2>
+      <div class="action-buttons">
+        <button (click)="navigateTo('manage-administrators')" class="action-btn">
+          <span class="icon">👥</span>
+          <span>Manage Administrators</span>
+        </button>
+        <button (click)="navigateTo('manage-sk-officials')" class="action-btn">
+          <span class="icon">📋</span>
+          <span>Manage SK Officials</span>
+        </button>
+        <button (click)="navigateTo('manage-youth-members')" class="action-btn">
+          <span class="icon">👨‍👩‍👧‍👦</span>
+          <span>Manage Youth Members</span>
+        </button>
+        <button (click)="navigateTo('backup-restore')" class="action-btn">
+          <span class="icon">💾</span>
+          <span>Backup/Restore Database</span>
+        </button>
+        <button (click)="navigateTo('system-statistics')" class="action-btn">
+          <span class="icon">📊</span>
+          <span>View System Statistics</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -100,6 +100,22 @@
 								<option value="Divorced">Divorced</option>
 							</select>
 						</div>
+						<div class="form-group full-width">
+							<label>Email Address *</label>
+							<input type="email" 
+									name="email" 
+									[(ngModel)]="profile.email" 
+									placeholder="Enter your email for login"
+									required />
+						</div>
+						<div class="form-group full-width">
+							<label>Password *</label>
+							<input type="password" 
+									name="password" 
+									[(ngModel)]="profile.password" 
+									placeholder="Create a password"
+									required />
+						</div>
 					</div>
 				</div>
 			}

@@ -1,0 +1,170 @@
+.backup-restore {
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    color: white;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .back-btn {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+
+  .success-message {
+    background: #4caf50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease-in;
+  }
+
+  .error-message {
+    background: #f44336;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease-in;
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+
+        h2 {
+          margin: 0;
+          font-size: 1.3rem;
+        }
+      }
+
+      .card-body {
+        padding: 20px;
+
+        p {
+          margin: 0 0 20px 0;
+          color: #333;
+          line-height: 1.6;
+
+          strong {
+            color: #f44336;
+          }
+        }
+
+        .action-btn {
+          width: 100%;
+          padding: 12px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 1rem;
+          transition: background 0.3s, transform 0.2s;
+
+          &:hover:not(:disabled) {
+            transform: scale(1.02);
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+
+          &.backup-btn {
+            background: #4caf50;
+            color: white;
+
+            &:hover:not(:disabled) {
+              background: #45a049;
+            }
+          }
+
+          &.restore-btn {
+            background: #ff9800;
+            color: white;
+
+            &:hover:not(:disabled) {
+              background: #e68900;
+            }
+          }
+        }
+      }
+    }
+
+    .info-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      grid-column: 1 / -1;
+
+      h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #333;
+        font-size: 1.2rem;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #555;
+        line-height: 1.8;
+
+        li {
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

@@ -36,7 +36,9 @@ export class RegisterPage {
     birthday: '',
     contactNumber: '',
     completeAddress: '',
-    civilStatus: ''
+    civilStatus: '',
+    email: '',
+    password: ''
   };
   
   classification: YouthClassification = {
@@ -75,7 +77,7 @@ export class RegisterPage {
     return !!(this.profile.firstName && this.profile.lastName && 
              this.profile.gender && this.profile.birthday && 
              this.profile.contactNumber && this.profile.completeAddress && 
-             this.profile.civilStatus);
+             this.profile.civilStatus && this.profile.email && this.profile.password);
   }
 
   isStep2Valid(): boolean {
