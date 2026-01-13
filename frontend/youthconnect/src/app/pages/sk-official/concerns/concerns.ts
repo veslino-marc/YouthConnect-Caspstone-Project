@@ -21,6 +21,10 @@ export class Concerns implements OnInit {
   errorMessage = '';
   deletingId: number | null = null;
   resolvingId: number | null = null;
+  sendingResponseId: number | null = null;
+  currentAdminId: number | null = null;
+  concernResponses: { [key: number]: string } = {}; // Store responses per concern
+  concernsWithResponses: Set<number> = new Set(); // Track concerns that have responses sent
 
   // Search and sort state
   searchTerm = '';
@@ -38,10 +42,21 @@ export class Concerns implements OnInit {
   // Modal state
   showDetailModal = false;
   selectedConcern: Concern | null = null;
+  adminResponse = ''; // Store admin response/message
 
   constructor(private concernService: ConcernService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
+    // Get the current logged-in admin ID from localStorage
+    const adminData = localStorage.getItem('admin');
+    if (adminData) {
+      try {
+        const admin = JSON.parse(adminData);
+        this.currentAdminId = admin.adminId;
+      } catch (e) {
+        console.error('Error parsing admin data from localStorage:', e);
+      }
+    }
     this.fetchConcerns();
   }
 
@@ -57,6 +72,34 @@ export class Concerns implements OnInit {
       error: (err) => {
         this.errorMessage = 'Failed to load concerns.';
         this.loading = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  onSendResponse(concern: Concern) {
+    if (!concern.concernId) return;
+    const response = this.concernResponses[concern.concernId];
+    if (!response || !response.trim()) {
+      alert('Please enter a response message.');
+      return;
+    }
+
+    this.sendingResponseId = concern.concernId;
+    this.cdr.markForCheck();
+
+    this.concernService.saveConcernUpdate(concern.concernId, response.trim(), this.currentAdminId!).subscribe({
+      next: () => {
+        alert('Response sent successfully!');
+        this.concernResponses[concern.concernId!] = ''; // Clear the response field
+        this.concernsWithResponses.add(concern.concernId!); // Mark concern as having a response
+        this.sendingResponseId = null;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Error sending response:', err);
+        alert('Failed to send response. Please try again.');
+        this.sendingResponseId = null;
         this.cdr.markForCheck();
       }
     });
@@ -234,6 +277,7 @@ export class Concerns implements OnInit {
 
   openDetailModal(concern: Concern) {
     this.selectedConcern = concern;
+    this.adminResponse = ''; // Reset response when opening modal
     this.showDetailModal = true;
     this.cdr.markForCheck();
   }
@@ -241,17 +285,49 @@ export class Concerns implements OnInit {
   closeDetailModal() {
     this.showDetailModal = false;
     this.selectedConcern = null;
+    this.adminResponse = '';
     this.cdr.markForCheck();
   }
 
   onResolveConcern(concern: Concern) {
     if (!concern.concernId) return;
     if (concern.status === 'Resolved') return;
+    
+    // Allow resolving if either:
+    // 1. A response was already sent via card (concern is in Set), OR
+    // 2. They're entering a new response in the modal
+    const hasAlreadySentResponse = this.concernsWithResponses.has(concern.concernId);
+    const hasNewResponse = this.adminResponse.trim();
+    
+    if (!hasAlreadySentResponse && !hasNewResponse) {
+      alert('Please send a response before resolving the concern.');
+      return;
+    }
 
     this.resolvingId = concern.concernId;
     this.cdr.markForCheck();
 
-    this.concernService.updateConcernStatus(concern.concernId, 'Resolved').subscribe({
+    // If there's a new response in the modal, save it first
+    if (hasNewResponse) {
+      this.concernService.saveConcernUpdate(concern.concernId, this.adminResponse, this.currentAdminId!).subscribe({
+        next: () => {
+          // Now update the concern status to Resolved
+          this.updateConcernToResolved(concern);
+        },
+        error: () => {
+          alert('Failed to save response message.');
+          this.resolvingId = null;
+          this.cdr.markForCheck();
+        }
+      });
+    } else {
+      // Response was already sent via card, just update status
+      this.updateConcernToResolved(concern);
+    }
+  }
+
+  private updateConcernToResolved(concern: Concern) {
+    this.concernService.updateConcernStatus(concern.concernId!, 'Resolved').subscribe({
       next: (updatedConcern) => {
         const index = this.concerns.findIndex(c => c.concernId === concern.concernId);
         if (index !== -1) {
@@ -259,6 +335,8 @@ export class Concerns implements OnInit {
         }
         this.applyFilters();
         this.resolvingId = null;
+        this.adminResponse = '';
+        this.closeDetailModal();
         this.cdr.markForCheck();
       },
       error: () => {

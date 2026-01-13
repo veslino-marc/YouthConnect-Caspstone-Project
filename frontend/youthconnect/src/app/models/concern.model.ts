@@ -15,3 +15,11 @@ export interface ConcernDTO {
     title: string;
     description: string;
 }
+
+export interface ConcernUpdate {
+    updateId?: number;
+    concernId: number;
+    updatedByAdminId?: number;
+    updateText: string;
+    createdAt?: Date;
+}

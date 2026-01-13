@@ -94,12 +94,32 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Response Section -->
+                    <div class="card-response-section" (click)="$event.stopPropagation()">
+                        <textarea 
+                            class="response-input"
+                            [(ngModel)]="concernResponses[concern.concernId!]"
+                            placeholder="Type your response message..."
+                            rows="3"
+                            [disabled]="concern.status === 'Resolved'"
+                        ></textarea>
+                        <button 
+                            class="send-response-btn"
+                            (click)="onSendResponse(concern)"
+                            [disabled]="!concernResponses[concern.concernId!]?.trim() || sendingResponseId === concern.concernId || concern.status === 'Resolved'"
+                            [title]="concern.status === 'Resolved' ? 'Concern already resolved' : !concernResponses[concern.concernId!]?.trim() ? 'Enter a response' : 'Send response'"
+                        >
+                            {{ sendingResponseId === concern.concernId ? '⏳ Sending...' : '📤 Send Response' }}
+                        </button>
+                    </div>
+
                     <div class="card-footer">
                         <button 
                             class="resolve-btn"
                             (click)="onResolveConcern(concern)"
-                            [disabled]="resolvingId === concern.concernId || concern.status === 'Resolved'"
-                            [title]="concern.status === 'Resolved' ? 'Already resolved' : resolvingId === concern.concernId ? 'Resolving...' : 'Mark as resolved'"
+                            [disabled]="resolvingId === concern.concernId || concern.status === 'Resolved' || !concernsWithResponses.has(concern.concernId!)"
+                            [title]="concern.status === 'Resolved' ? 'Already resolved' : !concernsWithResponses.has(concern.concernId!) ? 'Send a response first' : resolvingId === concern.concernId ? 'Resolving...' : 'Mark as resolved'"
                         >
                             {{ concern.status === 'Resolved' ? '✓ Resolved' : resolvingId === concern.concernId ? '⏳ Resolving...' : '✓ Mark as Resolved' }}
                         </button>
@@ -230,10 +250,32 @@
                     <label class="detail-label">Last Updated:</label>
                     <p class="detail-text">{{ selectedConcern.updatedAt | date:'medium' }}</p>
                 </div>
+
+                <div class="detail-row">
+                    <label class="detail-label">Admin Response *</label>
+                    <textarea 
+                        class="response-textarea"
+                        [(ngModel)]="adminResponse"
+                        placeholder="Enter your response or message to resolve this concern..."
+                        [disabled]="selectedConcern.status === 'Resolved'"
+                        rows="5"
+                    ></textarea>
+                    <p class="char-count" *ngIf="selectedConcern.status !== 'Resolved'">
+                        {{ adminResponse.length }} characters
+                    </p>
+                </div>
             </div>
         </div>
 
         <div class="modal-footer">
+            <button 
+                class="btn-resolve"
+                (click)="onResolveConcern(selectedConcern)"
+                [disabled]="selectedConcern.status === 'Resolved' || !adminResponse.trim() || resolvingId === selectedConcern.concernId"
+                [title]="selectedConcern.status === 'Resolved' ? 'Already resolved' : !adminResponse.trim() ? 'Please enter a response' : 'Resolve this concern'"
+            >
+                {{ selectedConcern.status === 'Resolved' ? '✓ Resolved' : resolvingId === selectedConcern.concernId ? '⏳ Resolving...' : '✓ Resolve Concern' }}
+            </button>
             <button class="btn-close" (click)="closeDetailModal()">Close</button>
         </div>
     </div>

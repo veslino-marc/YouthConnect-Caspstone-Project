@@ -73,4 +73,8 @@ export class LoginPage {
         }
       });
   }
+
+  onBack() {
+    this.router.navigate(['']);
+  }
 }
