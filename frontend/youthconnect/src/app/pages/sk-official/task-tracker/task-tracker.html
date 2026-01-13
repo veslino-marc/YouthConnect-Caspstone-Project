@@ -109,16 +109,18 @@
                     <div class="card-footer">
                         <div class="status-buttons">
                             <button 
-                                *ngIf="task.status !== 'In Progress'"
-                                class="status-btn" 
+                                class="status-btn"
+                                [class.active]="task.status === 'In Progress'"
+                                [disabled]="task.status === 'In Progress'"
                                 (click)="onStatusChange(task, 'In Progress')"
                                 title="Mark as In Progress"
                             >
                                 🔄 In Progress
                             </button>
                             <button 
-                                *ngIf="task.status !== 'Completed'"
-                                class="status-btn" 
+                                class="status-btn"
+                                [class.active]="task.status === 'Completed'"
+                                [disabled]="task.status === 'Completed'"
                                 (click)="onStatusChange(task, 'Completed')"
                                 title="Mark as Completed"
                             >
